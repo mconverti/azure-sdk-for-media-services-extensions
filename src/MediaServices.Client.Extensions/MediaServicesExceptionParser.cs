@@ -14,13 +14,24 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     using System.Globalization;
     using System.Xml.Linq;
 
+    /// <summary>
+    /// Contains helper methods to parse Windows Azure Media Services error messages in XML format.
+    /// </summary>
     public static class MediaServicesExceptionParser
     {
-        private const string DataServicesMetadataNamespace = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata";
+        /// <summary>
+        /// Represents the XML namespace name of Windows Azure Media Services error messages.
+        /// </summary>
+        public const string DataServicesMetadataNamespace = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata";
 
         private static readonly XName MessageXName = XName.Get("message", DataServicesMetadataNamespace);
         private static readonly XName CodeXName = XName.Get("code", DataServicesMetadataNamespace);
 
+        /// <summary>
+        /// Returns a new <see cref="System.Exception"/> instance with the XML error message content parsed.
+        /// </summary>
+        /// <param name="exception">The original exception with the XML error message.</param>
+        /// <returns>A new <see cref="System.Exception"/> instance with the XML error message content parsed.</returns>
         public static Exception Parse(Exception exception)
         {
             if (exception == null)
