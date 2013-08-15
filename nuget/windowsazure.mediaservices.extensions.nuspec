@@ -2,15 +2,15 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>windowsazure.mediaservices.extensions</id>
-	<title>Extensions for Windows Azure Media Services .NET SDK</title>
-    <version>1.0.0</version>
+    <title>Extensions for Windows Azure Media Services .NET SDK</title>
+    <version>1.0.1</version>
     <authors>Mariano Converti</authors>
     <owners>Mariano Converti</owners>
     <projectUrl>https://github.com/mconverti/azure-sdk-for-media-services-extensions</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A NuGet package that contains a set of extension methods and helpers for the Windows Azure Media Services SDK for .NET.</description>
     <copyright>Copyright 2013</copyright>
-	<language>en-US</language>
+    <language>en-US</language>
     <tags>WindowsAzure MediaServices</tags>
     <dependencies>
       <dependency id="windowsazure.mediaservices" version="2.3.0.1" />
