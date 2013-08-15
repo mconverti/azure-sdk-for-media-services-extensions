@@ -148,9 +148,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             ILocator sasLocator = await context.CreateLocatorAsync(asset, LocatorType.Sas, AccessPermissions.Write | AccessPermissions.List, DefaultAccessPolicyDuration);
 
-            BlobTransferClient blobTransferClient = new BlobTransferClient();
-            blobTransferClient.NumberOfConcurrentTransfers = context.NumberOfConcurrentTransfers;
-            blobTransferClient.ParallelTransferThreadCount = context.ParallelTransferThreadCount;
+            BlobTransferClient blobTransferClient = new BlobTransferClient
+            {
+                NumberOfConcurrentTransfers = context.NumberOfConcurrentTransfers,
+                ParallelTransferThreadCount = context.ParallelTransferThreadCount
+            };
 
             await asset.CreateAssetFileFromLocalFileAsync(filePath, blobTransferClient, sasLocator, cancellationToken);
 
@@ -233,9 +235,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             ILocator sasLocator = await context.CreateLocatorAsync(asset, LocatorType.Sas, AccessPermissions.Write | AccessPermissions.List, DefaultAccessPolicyDuration);
 
-            BlobTransferClient blobTransferClient = new BlobTransferClient();
-            blobTransferClient.NumberOfConcurrentTransfers = context.NumberOfConcurrentTransfers;
-            blobTransferClient.ParallelTransferThreadCount = context.ParallelTransferThreadCount;
+            BlobTransferClient blobTransferClient = new BlobTransferClient
+            {
+                NumberOfConcurrentTransfers = context.NumberOfConcurrentTransfers,
+                ParallelTransferThreadCount = context.ParallelTransferThreadCount
+            };
 
             IList<Task> uploadTasks = new List<Task>();
             foreach (string filePath in filePaths)
@@ -331,6 +335,111 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 task.Wait();
             }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.Threading.Tasks.Task"/> instance to download all the asset files in the <paramref name="asset"/> to the <paramref name="folderPath"/>.
+        /// </summary>
+        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
+        /// <param name="asset">The <see cref="IAsset"/> instance where to download the asset files.</param>
+        /// <param name="folderPath">The path to the folder where to download the asset files in the <paramref name="asset"/>.</param>
+        /// <param name="downloadProgressChangedCallback">A callback to report download progress for each asset file in the <paramref name="asset"/>.</param>
+        /// <param name="cancellationToken">The <see cref="System.Threading.CancellationToken"/> instance used for cancellation.</param>
+        /// <returns>A <see cref="System.Threading.Tasks.Task"/> instance to download all the asset files in the <paramref name="asset"/>.</returns>
+        public static async Task DownloadAssetFilesToFolderAsync(this CloudMediaContext context, IAsset asset, string folderPath, Action<IAssetFile, DownloadProgressChangedEventArgs> downloadProgressChangedCallback, CancellationToken cancellationToken)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException("context", "The context cannot be null.");
+            }
+
+            if (asset == null)
+            {
+                throw new ArgumentNullException("asset", "The asset cannot be null.");
+            }
+
+            if (!Directory.Exists(folderPath))
+            {
+                throw new ArgumentException(
+                    string.Format(CultureInfo.InvariantCulture, "The folder '{0}' does not exist.", folderPath),
+                    "folderPath");
+            }
+
+            ILocator sasLocator = await context.CreateLocatorAsync(asset, LocatorType.Sas, AccessPermissions.Read, DefaultAccessPolicyDuration);
+
+            EventHandler<DownloadProgressChangedEventArgs> downloadProgressChangedHandler =
+                (s, e) =>
+                {
+                    IAssetFile assetFile = (IAssetFile)s;
+                    DownloadProgressChangedEventArgs eventArgs = e;
+
+                    if (downloadProgressChangedCallback != null)
+                    {
+                        downloadProgressChangedCallback(assetFile, eventArgs);
+                    }
+                };
+
+            List<Task> downloadTasks = new List<Task>();
+            List<IAssetFile> assetFiles = asset.AssetFiles.ToList();
+            foreach (IAssetFile assetFile in assetFiles)
+            {
+                string localDownloadPath = Path.Combine(folderPath, assetFile.Name);
+                BlobTransferClient blobTransferClient = new BlobTransferClient
+                {
+                    NumberOfConcurrentTransfers = context.NumberOfConcurrentTransfers,
+                    ParallelTransferThreadCount = context.ParallelTransferThreadCount
+                };
+
+                assetFile.DownloadProgressChanged += downloadProgressChangedHandler;
+
+                downloadTasks.Add(
+                    assetFile.DownloadAsync(Path.GetFullPath(localDownloadPath), blobTransferClient, sasLocator, cancellationToken));
+            }
+
+            await Task.WhenAll(downloadTasks);
+
+            await sasLocator.DeleteAsync();
+
+            assetFiles.ForEach(af => af.DownloadProgressChanged -= downloadProgressChangedHandler);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.Threading.Tasks.Task"/> instance to download all the asset files in the <paramref name="asset"/> to the <paramref name="folderPath"/>.
+        /// </summary>
+        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
+        /// <param name="asset">The <see cref="IAsset"/> instance where to download the asset files.</param>
+        /// <param name="folderPath">The path to the folder where to download the asset files in the <paramref name="asset"/>.</param>
+        /// <param name="cancellationToken">The <see cref="System.Threading.CancellationToken"/> instance used for cancellation.</param>
+        /// <returns>A <see cref="System.Threading.Tasks.Task"/> instance to download all the asset files in the <paramref name="asset"/>.</returns>
+        public static Task DownloadAssetFilesToFolderAsync(this CloudMediaContext context, IAsset asset, string folderPath, CancellationToken cancellationToken)
+        {
+            return context.DownloadAssetFilesToFolderAsync(asset, folderPath, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Downloads all the asset files in the <paramref name="asset"/> to the <paramref name="folderPath"/>.
+        /// </summary>
+        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
+        /// <param name="asset">The <see cref="IAsset"/> instance where to download the asset files.</param>
+        /// <param name="folderPath">The path to the folder where to download the asset files in the <paramref name="asset"/>.</param>
+        /// <param name="downloadProgressChangedCallback">A callback to report download progress for each asset file in the <paramref name="asset"/>.</param>
+        public static void DownloadAssetFilesToFolder(this CloudMediaContext context, IAsset asset, string folderPath, Action<IAssetFile, DownloadProgressChangedEventArgs> downloadProgressChangedCallback)
+        {
+            using (Task task = context.DownloadAssetFilesToFolderAsync(asset, folderPath, downloadProgressChangedCallback, CancellationToken.None))
+            {
+                task.Wait();
+            }
+        }
+
+        /// <summary>
+        /// Downloads all the asset files in the <paramref name="asset"/> to the <paramref name="folderPath"/>.
+        /// </summary>
+        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
+        /// <param name="asset">The <see cref="IAsset"/> instance where to download the asset files.</param>
+        /// <param name="folderPath">The path to the folder where to download the asset files in the <paramref name="asset"/>.</param>
+        public static void DownloadAssetFilesToFolder(this CloudMediaContext context, IAsset asset, string folderPath)
+        {
+            context.DownloadAssetFilesToFolder(asset, folderPath, null);
         }
 
         /// <summary>
