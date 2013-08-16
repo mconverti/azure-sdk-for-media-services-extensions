@@ -10,6 +10,6 @@ copy ..\src\MediaServices.Client.Extensions\MediaServicesExceptionParser.cs cont
 
 NuGet Update -self
 NuGet Pack windowsazure.mediaservices.extensions.nuspec
-NuGet Push windowsazure.mediaservices.extensions.1.0.1.nupkg
+NuGet Push windowsazure.mediaservices.extensions.1.0.2.nupkg
 
 PAUSE

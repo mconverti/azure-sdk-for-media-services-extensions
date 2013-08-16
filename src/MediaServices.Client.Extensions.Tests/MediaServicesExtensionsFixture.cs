@@ -128,10 +128,45 @@ namespace MediaServices.Client.Extensions.Tests
         public void ShouldCreateAssetFromFile()
         {
             var fileName = "smallwmv1.wmv";
-            this.asset = this.context.CreateAssetFromFile(fileName, AssetCreationOptions.None);
+            this.asset = this.context.CreateAssetFromFile(fileName, null, AssetCreationOptions.None);
 
             Assert.IsNotNull(this.asset);
             Assert.AreEqual(fileName, this.asset.Name);
+
+            var assetFiles = this.asset.AssetFiles.ToList().OrderBy(a => a.Name);
+
+            Assert.AreEqual(1, assetFiles.Count());
+            Assert.AreEqual("smallwmv1.wmv", assetFiles.ElementAt(0).Name);
+
+            Assert.AreEqual(0, this.asset.Locators.Count());
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Media\smallwmv1.wmv")]
+        public void ShouldCreateAssetFromFileWithUploadProgressChangedCallback()
+        {
+            var uploadResults = new ConcurrentDictionary<string, UploadProgressChangedEventArgs>();
+            Action<IAssetFile, UploadProgressChangedEventArgs> uploadProgressChangedCallback =
+                (af, e) =>
+                {
+                    IAssetFile assetFile = af;
+                    UploadProgressChangedEventArgs eventArgs = e;
+
+                    Assert.IsNotNull(assetFile);
+                    Assert.IsNotNull(eventArgs);
+
+                    uploadResults.AddOrUpdate(assetFile.Name, eventArgs, (k, e2) => eventArgs);
+                };
+
+            var fileName = "smallwmv1.wmv";
+            this.asset = this.context.CreateAssetFromFile(fileName, AssetCreationOptions.None, uploadProgressChangedCallback);
+
+            Assert.IsNotNull(this.asset);
+            Assert.AreEqual(fileName, this.asset.Name);
+
+            Assert.AreEqual(1, uploadResults.Count);
+
+            AssertUploadedFile(".\\", fileName, uploadResults[fileName]);
 
             var assetFiles = this.asset.AssetFiles.ToList().OrderBy(a => a.Name);
 
@@ -148,7 +183,7 @@ namespace MediaServices.Client.Extensions.Tests
 
             try
             {
-                nullContext.CreateAssetFromFolderAsync(string.Empty, AssetCreationOptions.None, CancellationToken.None);
+                nullContext.CreateAssetFromFolderAsync(string.Empty, null, AssetCreationOptions.None, CancellationToken.None);
             }
             catch (AggregateException exception)
             {
@@ -162,7 +197,7 @@ namespace MediaServices.Client.Extensions.Tests
             var emptyFolderName = "EmptyMediaFolder";
             if (Directory.Exists(emptyFolderName))
             {
-                Directory.Delete(emptyFolderName);
+                Directory.Delete(emptyFolderName, true);
             }
 
             Directory.CreateDirectory(emptyFolderName);
@@ -184,10 +219,54 @@ namespace MediaServices.Client.Extensions.Tests
         public void ShouldCreateAssetFromFolder()
         {
             var folderName = "Media";
-            this.asset = this.context.CreateAssetFromFolder(folderName, AssetCreationOptions.None);
+            this.asset = this.context.CreateAssetFromFolder(folderName, null, AssetCreationOptions.None);
 
             Assert.IsNotNull(this.asset);
             Assert.AreEqual(folderName, this.asset.Name);
+
+            var assetFiles = this.asset.AssetFiles.ToList().OrderBy(a => a.Name);
+
+            Assert.AreEqual(3, assetFiles.Count());
+            Assert.AreEqual("dummy.ism", assetFiles.ElementAt(0).Name);
+            Assert.IsTrue(assetFiles.ElementAt(0).IsPrimary);
+            Assert.AreEqual("smallwmv1.wmv", assetFiles.ElementAt(1).Name);
+            Assert.IsFalse(assetFiles.ElementAt(1).IsPrimary);
+            Assert.AreEqual("smallwmv2.wmv", assetFiles.ElementAt(2).Name);
+            Assert.IsFalse(assetFiles.ElementAt(2).IsPrimary);
+
+            Assert.AreEqual(0, this.asset.Locators.Count());
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Media\smallwmv1.wmv", "Media")]
+        [DeploymentItem(@"Media\smallwmv2.wmv", "Media")]
+        [DeploymentItem(@"Media\dummy.ism", "Media")]
+        public void ShouldCreateAssetFromFolderWithUploadProgressChangedCallback()
+        {
+            var uploadResults = new ConcurrentDictionary<string, UploadProgressChangedEventArgs>();
+            Action<IAssetFile, UploadProgressChangedEventArgs> uploadProgressChangedCallback =
+                (af, e) =>
+                {
+                    IAssetFile assetFile = af;
+                    UploadProgressChangedEventArgs eventArgs = e;
+
+                    Assert.IsNotNull(assetFile);
+                    Assert.IsNotNull(eventArgs);
+
+                    uploadResults.AddOrUpdate(assetFile.Name, eventArgs, (k, e2) => eventArgs);
+                };
+
+            var folderName = "Media";
+            this.asset = this.context.CreateAssetFromFolder(folderName, AssetCreationOptions.None, uploadProgressChangedCallback);
+
+            Assert.IsNotNull(this.asset);
+            Assert.AreEqual(folderName, this.asset.Name);
+
+            Assert.AreEqual(3, uploadResults.Count);
+
+            AssertUploadedFile(folderName, "smallwmv1.wmv", uploadResults["smallwmv1.wmv"]);
+            AssertUploadedFile(folderName, "smallwmv2.wmv", uploadResults["smallwmv2.wmv"]);
+            AssertUploadedFile(folderName, "dummy.ism", uploadResults["dummy.ism"]);
 
             var assetFiles = this.asset.AssetFiles.ToList().OrderBy(a => a.Name);
 
@@ -274,7 +353,7 @@ namespace MediaServices.Client.Extensions.Tests
             var downloadFolderPath = "Media-Downloaded";
             if (Directory.Exists(downloadFolderPath))
             {
-                Directory.Delete(downloadFolderPath);
+                Directory.Delete(downloadFolderPath, true);
             }
 
             Directory.CreateDirectory(downloadFolderPath);
@@ -296,7 +375,7 @@ namespace MediaServices.Client.Extensions.Tests
             var downloadFolderPath = "Media-Downloaded";
             if (Directory.Exists(downloadFolderPath))
             {
-                Directory.Delete(downloadFolderPath);
+                Directory.Delete(downloadFolderPath, true);
             }
 
             Directory.CreateDirectory(downloadFolderPath);
@@ -318,7 +397,7 @@ namespace MediaServices.Client.Extensions.Tests
             var downloadFolderPath = "Media-Downloaded";
             if (Directory.Exists(downloadFolderPath))
             {
-                Directory.Delete(downloadFolderPath);
+                Directory.Delete(downloadFolderPath, true);
             }
 
             try
@@ -343,7 +422,7 @@ namespace MediaServices.Client.Extensions.Tests
             var downloadFolderPath = "Media-Downloaded";
             if (Directory.Exists(downloadFolderPath))
             {
-                Directory.Delete(downloadFolderPath);
+                Directory.Delete(downloadFolderPath, true);
             }
 
             Directory.CreateDirectory(downloadFolderPath);
@@ -352,9 +431,9 @@ namespace MediaServices.Client.Extensions.Tests
 
             Assert.AreEqual(3, Directory.GetFiles(downloadFolderPath).Length);
 
-            AssertFilesInFolders(originalFolderPath, downloadFolderPath, "smallwmv1.wmv");
-            AssertFilesInFolders(originalFolderPath, downloadFolderPath, "smallwmv2.wmv");
-            AssertFilesInFolders(originalFolderPath, downloadFolderPath, "dummy.ism");
+            AssertDownloadedFile(originalFolderPath, downloadFolderPath, "smallwmv1.wmv");
+            AssertDownloadedFile(originalFolderPath, downloadFolderPath, "smallwmv2.wmv");
+            AssertDownloadedFile(originalFolderPath, downloadFolderPath, "dummy.ism");
 
             Assert.AreEqual(0, this.asset.Locators.Count());
         }
@@ -371,7 +450,7 @@ namespace MediaServices.Client.Extensions.Tests
             var downloadFolderPath = "Media-Downloaded";
             if (Directory.Exists(downloadFolderPath))
             {
-                Directory.Delete(downloadFolderPath);
+                Directory.Delete(downloadFolderPath, true);
             }
 
             Directory.CreateDirectory(downloadFolderPath);
@@ -393,9 +472,9 @@ namespace MediaServices.Client.Extensions.Tests
             Assert.AreEqual(3, downloadResults.Count);
             Assert.AreEqual(3, Directory.GetFiles(downloadFolderPath).Length);
 
-            AssertFilesInFolders(originalFolderPath, downloadFolderPath, "smallwmv1.wmv", downloadResults["smallwmv1.wmv"]);
-            AssertFilesInFolders(originalFolderPath, downloadFolderPath, "smallwmv2.wmv", downloadResults["smallwmv2.wmv"]);
-            AssertFilesInFolders(originalFolderPath, downloadFolderPath, "dummy.ism", downloadResults["dummy.ism"]);
+            AssertDownloadedFile(originalFolderPath, downloadFolderPath, "smallwmv1.wmv", downloadResults["smallwmv1.wmv"]);
+            AssertDownloadedFile(originalFolderPath, downloadFolderPath, "smallwmv2.wmv", downloadResults["smallwmv2.wmv"]);
+            AssertDownloadedFile(originalFolderPath, downloadFolderPath, "dummy.ism", downloadResults["dummy.ism"]);
 
             Assert.AreEqual(0, this.asset.Locators.Count());
         }
@@ -641,7 +720,7 @@ namespace MediaServices.Client.Extensions.Tests
             }
         }
 
-        private static void AssertFilesInFolders(string originalFolderPath, string downloadFolderPath, string fileName, DownloadProgressChangedEventArgs downloadProgressChangedEventArgs = null)
+        private static void AssertDownloadedFile(string originalFolderPath, string downloadFolderPath, string fileName, DownloadProgressChangedEventArgs downloadProgressChangedEventArgs = null)
         {
             var expected = new FileInfo(Path.Combine(originalFolderPath, fileName));
             var result = new FileInfo(Path.Combine(downloadFolderPath, fileName));
@@ -654,6 +733,15 @@ namespace MediaServices.Client.Extensions.Tests
                 Assert.AreEqual(expected.Length, downloadProgressChangedEventArgs.TotalBytes);
                 Assert.AreEqual(100, downloadProgressChangedEventArgs.Progress);
             }
+        }
+
+        private static void AssertUploadedFile(string originalFolderPath, string fileName, UploadProgressChangedEventArgs uploadProgressChangedEventArgs)
+        {
+            var expected = new FileInfo(Path.Combine(originalFolderPath, fileName));
+
+            Assert.AreEqual(expected.Length, uploadProgressChangedEventArgs.BytesUploaded);
+            Assert.AreEqual(expected.Length, uploadProgressChangedEventArgs.TotalBytes);
+            Assert.AreEqual(100, uploadProgressChangedEventArgs.Progress);
         }
 
         private CloudMediaContext CreateContext()
