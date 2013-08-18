@@ -19,16 +19,35 @@ namespace MediaServices.Client.Extensions.Tests
     public class MediaServicesExceptionParserFixture
     {
         [TestMethod]
-        [DeploymentItem(@"Media\dummy.ism")]
         public void ShoudParseMediaServicesExceptionErrorMessage()
         {
             var context = this.CreateContext();
-            var asset = context.CreateAssetFromFile("dummy.ism", AssetCreationOptions.None);
+            var asset = context.Assets.Create("EmptyAsset", AssetCreationOptions.None);
 
             try
             {
                 asset.Delete();
                 asset.Delete();
+            }
+            catch (Exception exception)
+            {
+                var parsedException = MediaServicesExceptionParser.Parse(exception);
+
+                Assert.IsNotNull(parsedException);
+                Assert.AreEqual("Resource Asset not found", parsedException.Message);
+            }
+        }
+
+        [TestMethod]
+        public void ShoudParseMediaServicesExceptionErrorMessageFromAggregateException()
+        {
+            var context = this.CreateContext();
+            var asset = context.Assets.Create("EmptyAsset", AssetCreationOptions.None);
+
+            try
+            {
+                asset.DeleteAsync().Wait();
+                asset.DeleteAsync().Wait();
             }
             catch (Exception exception)
             {

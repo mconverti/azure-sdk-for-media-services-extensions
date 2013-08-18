@@ -41,7 +41,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             try
             {
-                Exception baseException = exception.GetBaseException();
+                Exception baseException = exception.GetBaseException().GetBaseException();
                 XDocument doc = XDocument.Parse(baseException.Message);
 
                 return ParseExceptionErrorXElement(doc.Root) ?? exception;
