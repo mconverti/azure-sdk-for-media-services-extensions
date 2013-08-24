@@ -7,8 +7,10 @@ A NuGet package that contains a set of extension methods and helpers for the Win
 ## Usage
 Install the [WindowsAzure.MediaServices.Extensions Nuget package](https://www.nuget.org/packages/WindowsAzure.MediaServices.Extensions) by running `Install-Package WindowsAzure.MediaServices.Extensions` in the [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console/).
 
-After installing the package, a **MediaServicesExtensions** folder will be added to your project's root directory containing the following two files:
-- MediaServicesExtensions.cs: Contains useful extension methods for the interfaces and classes in _Microsoft.WindowsAzure.MediaServices.Client_ namespace. 
+After installing the package, a **MediaServicesExtensions** folder will be added to your project's root directory containing the following files:
+- AssetExtensions.cs: Contains useful extension methods and helpers related to the [IAsset](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.iasset.aspx) interface.
+- JobExtensions.cs: Contains useful extension methods and helpers related to the [IJob](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ijob.aspx) interface.
+- LocatorExtensions.cs: Contains useful extension methods and helpers related to the [ILocator](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ilocator.aspx) interface.
 - MediaServicesExceptionParser.cs: Contains helper methods to parse Windows Azure Media Services error messages in XML format.
 
 ## Extension Methods and Helpers available
