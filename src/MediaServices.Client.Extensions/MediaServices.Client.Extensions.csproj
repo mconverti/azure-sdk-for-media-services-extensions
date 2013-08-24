@@ -73,8 +73,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssetExtensions.cs" />
+    <Compile Include="LocatorExtensions.cs" />
     <Compile Include="MediaServicesExceptionParser.cs" />
-    <Compile Include="MediaServicesExtensions.cs" />
+    <Compile Include="JobExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

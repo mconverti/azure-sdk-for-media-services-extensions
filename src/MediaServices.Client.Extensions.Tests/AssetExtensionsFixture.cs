@@ -1,4 +1,4 @@
-﻿// <copyright file="MediaServicesExtensionsFixture.cs" company="open-source">
+﻿// <copyright file="AssetExtensionsFixture.cs" company="open-source">
 //  No rights reserved. Copyright (c) 2013 by Mariano Converti
 //   
 //  Redistribution and use in source and binary forms, with or without modification, are permitted.
@@ -21,92 +21,10 @@ namespace MediaServices.Client.Extensions.Tests
     using Microsoft.WindowsAzure.Storage.Blob;
 
     [TestClass]
-    public class MediaServicesExtensionsFixture
+    public class AssetExtensionsFixture
     {
         private CloudMediaContext context;
         private IAsset asset;
-        private IAsset outputAsset;
-
-        #region Locator extension tests
-
-        [TestMethod]
-        public void ShouldThrowWhenCreateAccessPolicyAndLocatorIfContextIsNull()
-        {
-            CloudMediaContext nullContext = null;
-            this.asset = this.context.Assets.Create("empty", AssetCreationOptions.None);
-
-            try
-            {
-                nullContext.CreateLocator(this.asset, LocatorType.OnDemandOrigin, AccessPermissions.Read, TimeSpan.FromDays(1));
-            }
-            catch (AggregateException exception)
-            {
-                Assert.IsInstanceOfType(exception.InnerException, typeof(ArgumentNullException));
-            }
-        }
-
-        [TestMethod]
-        public void ShouldThrowWhenCreateAccessPolicyAndLocatorIfAssetIsNull()
-        {
-            IAsset nullAsset = null;
-
-            try
-            {
-                this.context.CreateLocator(nullAsset, LocatorType.OnDemandOrigin, AccessPermissions.Read, TimeSpan.FromDays(1));
-            }
-            catch (AggregateException exception)
-            {
-                Assert.IsInstanceOfType(exception.InnerException, typeof(ArgumentNullException));
-            }
-        }
-
-        [TestMethod]
-        public void ShouldCreateAccessPolicyAndOriginLocator()
-        {
-            var locatorType = LocatorType.OnDemandOrigin;
-            DateTime? locatorStartTime = null;
-            var accessPolicyPermissions = AccessPermissions.Read;
-            var accessPolicyDuration = TimeSpan.FromDays(1);
-            this.asset = this.context.Assets.Create("empty", AssetCreationOptions.None);
-
-            var locator = this.context.CreateLocator(this.asset, locatorType, accessPolicyPermissions, accessPolicyDuration, locatorStartTime);
-
-            Assert.IsNotNull(locator);
-            Assert.AreEqual(locatorType, locator.Type);
-            Assert.AreEqual(locatorStartTime, locator.StartTime);
-
-            var accessPolicy = locator.AccessPolicy;
-
-            Assert.IsNotNull(accessPolicy);
-            Assert.AreEqual(accessPolicyPermissions, accessPolicy.Permissions);
-            Assert.AreEqual(accessPolicyDuration, accessPolicy.Duration);
-        }
-
-        [TestMethod]
-        public void ShouldCreateAccessPolicyAndSasLocator()
-        {
-            var locatorType = LocatorType.Sas;
-            DateTime? locatorStartTime = DateTime.Today;
-            var accessPolicyPermissions = AccessPermissions.Read;
-            var accessPolicyDuration = TimeSpan.FromDays(1);
-            this.asset = this.context.Assets.Create("empty", AssetCreationOptions.None);
-
-            var locator = this.context.CreateLocator(this.asset, locatorType, accessPolicyPermissions, accessPolicyDuration, locatorStartTime);
-
-            Assert.IsNotNull(locator);
-            Assert.AreEqual(locatorType, locator.Type);
-            Assert.AreEqual(locatorStartTime, locator.StartTime);
-
-            var accessPolicy = locator.AccessPolicy;
-
-            Assert.IsNotNull(accessPolicy);
-            Assert.AreEqual(accessPolicyPermissions, accessPolicy.Permissions);
-            Assert.AreEqual(accessPolicyDuration, accessPolicy.Duration);
-        }
-
-        #endregion
-
-        #region Asset extensions tests
 
         [TestMethod]
         public void ShouldThrowWhenCreateAssetFromFileIfContextIsNull()
@@ -574,136 +492,11 @@ namespace MediaServices.Client.Extensions.Tests
             nullAsset.GetSmoothStreamingUri();
         }
 
-        #endregion
-
-        #region Job extension tests
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ShouldThrowWhenGetLatestMediaProcessorByNameIfMediaProcessorCollectionIsNull()
-        {
-            var mediaProcessorName = "Windows Azure Media Encoder";
-            MediaProcessorBaseCollection nullMediaProcessorCollection = null;
-
-            nullMediaProcessorCollection.GetLatestMediaProcessorByName(mediaProcessorName);
-        }
-
-        [TestMethod]
-        public void ShouldGetLatestMediaProcessorByNameReturnNullIfMediaProcessorNameIsNotValid()
-        {
-            var mediaProcessorName = "Invalid Media Processor Name";
-            var mediaProcessor = this.context.MediaProcessors.GetLatestMediaProcessorByName(mediaProcessorName);
-
-            Assert.IsNull(mediaProcessor);
-        }
-
-        [TestMethod]
-        public void ShouldGetLatestMediaProcessorByName()
-        {
-            var mediaProcessorName = "Windows Azure Media Encoder";
-            var mediaProcessor = this.context.MediaProcessors.GetLatestMediaProcessorByName(mediaProcessorName);
-
-            Assert.IsNotNull(mediaProcessor);
-
-            var expectedMediaProcessor = this.context.MediaProcessors
-                .Where(mp => mp.Name == mediaProcessorName)
-                .ToList()
-                .Select(mp => new { mp.Id, mp.Name, Version = new Version(mp.Version) })
-                .OrderBy(mp => mp.Version)
-                .Last();
-
-            Assert.AreEqual(expectedMediaProcessor.Id, mediaProcessor.Id);
-            Assert.AreEqual(expectedMediaProcessor.Name, mediaProcessor.Name);
-            Assert.AreEqual(expectedMediaProcessor.Version, new Version(mediaProcessor.Version));
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ShouldThrowPrepareJobWithSingleTaskIfContextIsNull()
-        {
-            var mediaProcessorName = "Windows Azure Media Encoder";
-            var taskConfiguration = "H264 Smooth Streaming 720p";
-            var outputAssetName = "Output Asset Name";
-            var outputAssetOptions = AssetCreationOptions.None;
-            this.asset = this.context.Assets.Create("empty", AssetCreationOptions.None);
-            CloudMediaContext nullContext = null;
-
-            nullContext.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguration, this.asset, outputAssetName, outputAssetOptions);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ShouldThrowPrepareJobWithSingleTaskIfInputAssetIsNull()
-        {
-            var mediaProcessorName = "Windows Azure Media Encoder";
-            var taskConfiguration = "H264 Smooth Streaming 720p";
-            var outputAssetName = "Output Asset Name";
-            var outputAssetOptions = AssetCreationOptions.None;
-            IAsset inputAsset = null;
-
-            this.context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguration, inputAsset, outputAssetName, outputAssetOptions);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void ShouldThrowPrepareJobWithSingleTaskIfMediaProcessorNameIsUnknown()
-        {
-            var mediaProcessorName = "Unknown Media Processor";
-            var taskConfiguration = "H264 Smooth Streaming 720p";
-            var outputAssetName = "Output Asset Name";
-            var outputAssetOptions = AssetCreationOptions.None;
-            this.asset = this.context.Assets.Create("empty", AssetCreationOptions.None);
-
-            this.context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguration, this.asset, outputAssetName, outputAssetOptions);
-        }
-
-        [TestMethod]
-        [DeploymentItem(@"Media\smallwmv1.wmv")]
-        public void ShouldPrepareJobWithSingleTask()
-        {
-            var mediaProcessorName = "Windows Azure Media Encoder";
-            var taskConfiguration = "H264 Smooth Streaming 720p";
-            var outputAssetName = "Output Asset Name";
-            var outputAssetOptions = AssetCreationOptions.None;
-            this.asset = this.context.CreateAssetFromFile("smallwmv1.wmv", AssetCreationOptions.None);
-
-            var job = this.context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguration, this.asset, outputAssetName, outputAssetOptions);
-
-            Assert.IsNotNull(job);
-            Assert.AreEqual(1, job.Tasks.Count);
-
-            var task = job.Tasks[0];
-
-            Assert.IsNotNull(task);
-            Assert.AreEqual(taskConfiguration, task.Configuration);
-            Assert.AreEqual(1, task.InputAssets.Count);
-            Assert.AreSame(this.asset, task.InputAssets[0]);
-            Assert.AreEqual(1, task.OutputAssets.Count);
-            Assert.AreEqual(outputAssetName, task.OutputAssets[0].Name);
-            Assert.AreEqual(outputAssetOptions, task.OutputAssets[0].Options);
-            Assert.AreEqual(this.context.MediaProcessors.GetLatestMediaProcessorByName(mediaProcessorName).Id, task.MediaProcessorId);
-
-            job.Submit();
-            job.GetExecutionProgressTask(CancellationToken.None).Wait();
-
-            Assert.AreEqual(JobState.Finished, job.State);
-            Assert.AreEqual(1, job.OutputMediaAssets.Count);
-
-            this.outputAsset = job.OutputMediaAssets[0];
-
-            Assert.IsNotNull(this.outputAsset);
-            Assert.AreEqual(outputAssetName, this.outputAsset.Name);
-            Assert.AreEqual(outputAssetOptions, this.outputAsset.Options);
-        }
-
-        #endregion
-
         [TestInitialize]
         public void Initialize()
         {
             this.context = this.CreateContext();
             this.asset = null;
-            this.outputAsset = null;
         }
 
         [TestCleanup]
@@ -712,11 +505,6 @@ namespace MediaServices.Client.Extensions.Tests
             if (this.asset != null)
             {
                 this.asset.Delete();
-            }
-
-            if (this.outputAsset != null)
-            {
-                this.outputAsset.Delete();
             }
         }
 
