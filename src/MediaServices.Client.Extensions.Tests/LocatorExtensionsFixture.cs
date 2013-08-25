@@ -23,7 +23,7 @@ namespace MediaServices.Client.Extensions.Tests
         private IAsset asset;
 
         [TestMethod]
-        public void ShouldThrowWhenCreateAccessPolicyAndLocatorIfContextIsNull()
+        public void ShouldThrowCreateAccessPolicyAndLocatorIfContextIsNull()
         {
             CloudMediaContext nullContext = null;
             this.asset = this.context.Assets.Create("empty", AssetCreationOptions.None);
@@ -39,7 +39,7 @@ namespace MediaServices.Client.Extensions.Tests
         }
 
         [TestMethod]
-        public void ShouldThrowWhenCreateAccessPolicyAndLocatorIfAssetIsNull()
+        public void ShouldThrowCreateAccessPolicyAndLocatorIfAssetIsNull()
         {
             IAsset nullAsset = null;
 

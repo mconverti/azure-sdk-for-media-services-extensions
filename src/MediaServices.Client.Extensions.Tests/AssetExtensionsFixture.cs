@@ -27,7 +27,7 @@ namespace MediaServices.Client.Extensions.Tests
         private IAsset asset;
 
         [TestMethod]
-        public void ShouldThrowWhenCreateAssetFromFileIfContextIsNull()
+        public void ShouldThrowCreateAssetFromFileIfContextIsNull()
         {
             CloudMediaContext nullContext = null;
 
@@ -95,7 +95,7 @@ namespace MediaServices.Client.Extensions.Tests
         }
 
         [TestMethod]
-        public void ShouldThrowWhenCreateAssetFromFolderIfContextIsNull()
+        public void ShouldThrowCreateAssetFromFolderIfContextIsNull()
         {
             CloudMediaContext nullContext = null;
 
@@ -110,7 +110,7 @@ namespace MediaServices.Client.Extensions.Tests
         }
 
         [TestMethod]
-        public void ShouldThrowWhenCreateAssetFromFolderIfFolderDoesNotContainAnyFiles()
+        public void ShouldThrowCreateAssetFromFolderIfFolderDoesNotContainAnyFiles()
         {
             var emptyFolderName = "EmptyMediaFolder";
             if (Directory.Exists(emptyFolderName))

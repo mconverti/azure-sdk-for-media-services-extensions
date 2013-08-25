@@ -78,6 +78,7 @@
     <Compile Include="MediaServicesExceptionParser.cs" />
     <Compile Include="JobExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UrlExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
