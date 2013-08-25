@@ -13,12 +13,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     using System;
     using System.Globalization;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
-    /// Contains extension methods and helpers related to the <see cref="Microsoft.WindowsAzure.MediaServices.Client.IJob"/> interface.
+    /// Contains extension methods and helpers related to the <see cref="IJob"/> interface.
     /// </summary>
     public static class JobExtensions
     {
+        private const int DefaultJobRefreshIntervalInMilliseconds = 2500;
+
         /// <summary>
         /// Returns the latest version of the <see cref="IMediaProcessor"/> by its <paramref name="mediaProcessorName"/>. 
         /// </summary>
@@ -104,6 +108,85 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public static IJob PrepareJobWithSingleTask(this MediaContextBase context, string mediaProcessorName, string taskConfiguration, IAsset inputAsset, string outputAssetName, AssetCreationOptions outputAssetOptions)
         {
             return context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguration, inputAsset, outputAssetName, null, outputAssetOptions);
+        }
+
+        /// <summary>
+        /// Returns the overall progress of the <paramref name="job"/> by aggregating the progress of all its tasks.
+        /// </summary>
+        /// <param name="job">The <see cref="IJob"/> instance.</param>
+        /// <returns>The overall progress of the <paramref name="job"/> by aggregating the progress of all its tasks.</returns>
+        public static double GetOverallProgress(this IJob job)
+        {
+            if (job == null)
+            {
+                throw new ArgumentNullException("job", "The job cannot be null.");
+            }
+
+            return job.Tasks.Sum(t => t.Progress) / job.Tasks.Count;
+        }
+
+        /// <summary>
+        /// Returns a started <see cref="System.Threading.Tasks.Task"/> to monitor the <paramref name="job"/> progress by invoking the <paramref name="executionProgressChangedCallback"/> when its state or overall progress change.
+        /// </summary>
+        /// <param name="context">The <see cref="MediaContextBase"/> instance.</param>
+        /// <param name="job">The <see cref="IJob"/> instance.</param>
+        /// <param name="jobRefreshIntervalInMilliseconds">The time interval in milliseconds to refresh the <paramref name="job"/>.</param>
+        /// <param name="executionProgressChangedCallback">A callback that is invoked when the <paramref name="job"/> state or overall progress change.</param>
+        /// <param name="cancellationToken">The <see cref="System.Threading.CancellationToken"/> instance used for cancellation.</param>
+        /// <returns>A started <see cref="System.Threading.Tasks.Task"/> to monitor the <paramref name="job"/> progress by invoking the <paramref name="executionProgressChangedCallback"/> when its state or overall progress change.</returns>
+        public static Task StartExecutionProgressTask(this MediaContextBase context, IJob job, int jobRefreshIntervalInMilliseconds, Action<IJob> executionProgressChangedCallback, CancellationToken cancellationToken)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException("context", "The context cannot be null.");
+            }
+
+            if (job == null)
+            {
+                throw new ArgumentNullException("job", "The job cannot be null.");
+            }
+
+            if (string.IsNullOrWhiteSpace(job.Id))
+            {
+                throw new ArgumentException("The job does not have a valid Id. Please, make sure to submit it first.", "job");
+            }
+
+            return Task.Factory.StartNew(
+                    originalJob =>
+                    {
+                        IJob refreshedJob = (IJob)originalJob;
+                        while ((refreshedJob.State != JobState.Canceled) && (refreshedJob.State != JobState.Error) && (refreshedJob.State != JobState.Finished))
+                        {
+                            Thread.Sleep(jobRefreshIntervalInMilliseconds);
+
+                            cancellationToken.ThrowIfCancellationRequested();
+
+                            JobState previousState = refreshedJob.State;
+                            double previousOverallProgress = refreshedJob.GetOverallProgress();
+
+                            refreshedJob = context.Jobs.Where(j => j.Id == refreshedJob.Id).First();
+
+                            if ((executionProgressChangedCallback != null) && ((refreshedJob.State != previousState) || (refreshedJob.GetOverallProgress() != previousOverallProgress)))
+                            {
+                                executionProgressChangedCallback(refreshedJob);
+                            }
+                        }
+                    },
+                    job,
+                    cancellationToken);
+        }
+
+        /// <summary>
+        /// Returns a started <see cref="System.Threading.Tasks.Task"/> to monitor the <paramref name="job"/> progress by invoking the <paramref name="executionProgressChangedCallback"/> when its state or overall progress change.
+        /// </summary>
+        /// <param name="context">The <see cref="MediaContextBase"/> instance.</param>
+        /// <param name="job">The <see cref="IJob"/> instance.</param>
+        /// <param name="executionProgressChangedCallback">A callback that is invoked when the <paramref name="job"/> state or overall progress change.</param>
+        /// <param name="cancellationToken">The <see cref="System.Threading.CancellationToken"/> instance used for cancellation.</param>
+        /// <returns>A started <see cref="System.Threading.Tasks.Task"/> to monitor the <paramref name="job"/> progress by invoking the <paramref name="executionProgressChangedCallback"/> when its state or overall progress change.</returns>
+        public static Task StartExecutionProgressTask(this MediaContextBase context, IJob job, Action<IJob> executionProgressChangedCallback, CancellationToken cancellationToken)
+        {
+            return context.StartExecutionProgressTask(job, DefaultJobRefreshIntervalInMilliseconds, executionProgressChangedCallback, cancellationToken);
         }
     }
 }

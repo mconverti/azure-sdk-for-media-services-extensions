@@ -76,6 +76,9 @@
     <Compile Include="LocatorExtensionsFixture.cs" />
     <Compile Include="MediaServicesExceptionParserFixture.cs" />
     <Compile Include="JobExtensionsFixture.cs" />
+    <Compile Include="Mocks\JobMock.cs" />
+    <Compile Include="Mocks\TaskCollectionMock.cs" />
+    <Compile Include="Mocks\TaskMock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

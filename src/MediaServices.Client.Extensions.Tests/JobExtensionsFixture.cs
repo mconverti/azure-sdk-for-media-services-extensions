@@ -12,9 +12,9 @@ namespace MediaServices.Client.Extensions.Tests
 {
     using System;
     using System.Configuration;
-    using System.IO;
     using System.Linq;
     using System.Threading;
+    using MediaServices.Client.Extensions.Tests.Mocks;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Microsoft.WindowsAzure.MediaServices.Client;
 
@@ -143,6 +143,199 @@ namespace MediaServices.Client.Extensions.Tests
             Assert.AreEqual(outputAssetOptions, this.outputAsset.Options);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ShouldThrowGetOverallProgressIfJobIsNull()
+        {
+            IJob nullJob = null;
+
+            nullJob.GetOverallProgress();
+        }
+
+        [TestMethod]
+        public void ShouldGetOverallProgressWhenJobContainsSingleTask()
+        {
+            var task = new TaskMock();
+            var taskCollection = new TaskCollectionMock();
+
+            taskCollection.Add(task);
+
+            var job = new JobMock();
+            job.Tasks = taskCollection;
+
+            task.Progress = 0;
+            Assert.AreEqual(0, job.GetOverallProgress());
+
+            task.Progress = 25;
+            Assert.AreEqual(25, job.GetOverallProgress());
+
+            task.Progress = 75;
+            Assert.AreEqual(75, job.GetOverallProgress());
+
+            task.Progress = 100;
+            Assert.AreEqual(100, job.GetOverallProgress());
+        }
+
+        [TestMethod]
+        public void ShouldGetOverallProgressWhenJobContainsMultipleTask()
+        {
+            var task1 = new TaskMock();
+            var task2 = new TaskMock();
+            var taskCollection = new TaskCollectionMock();
+
+            taskCollection.Add(task1);
+            taskCollection.Add(task2);
+
+            var job = new JobMock();
+            job.Tasks = taskCollection;
+
+            task1.Progress = 0;
+            task2.Progress = 0;
+            Assert.AreEqual(0, job.GetOverallProgress());
+
+            task1.Progress = 25;
+            task2.Progress = 0;
+            Assert.AreEqual(12.5, job.GetOverallProgress());
+
+            task1.Progress = 25;
+            task2.Progress = 50;
+            Assert.AreEqual(37.5, job.GetOverallProgress());
+
+            task1.Progress = 50;
+            task2.Progress = 50;
+            Assert.AreEqual(50, job.GetOverallProgress());
+
+            task1.Progress = 75;
+            task2.Progress = 25;
+            Assert.AreEqual(50, job.GetOverallProgress());
+
+            task1.Progress = 75;
+            task2.Progress = 50;
+            Assert.AreEqual(62.5, job.GetOverallProgress());
+
+            task1.Progress = 50;
+            task2.Progress = 100;
+            Assert.AreEqual(75, job.GetOverallProgress());
+
+            task1.Progress = 100;
+            task2.Progress = 75;
+            Assert.AreEqual(87.5, job.GetOverallProgress());
+
+            task1.Progress = 100;
+            task2.Progress = 100;
+            Assert.AreEqual(100, job.GetOverallProgress());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ShouldThrowStartExecutionProgressTaskIfContextIsNull()
+        {
+            MediaContextBase nullContext = null;
+            IJob job = this.context.Jobs.Create("TestJob");
+
+            nullContext.StartExecutionProgressTask(job, j => { }, CancellationToken.None);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ShouldThrowStartExecutionProgressTaskIfJobIsNull()
+        {
+            IJob nullJob = null;
+
+            this.context.StartExecutionProgressTask(nullJob, j => { }, CancellationToken.None);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ShouldThrowStartExecutionProgressTaskIfJobDoesNotHaveValidId()
+        {
+            var mediaProcessorName = "Windows Azure Media Encoder";
+            var taskConfiguration = "H264 Smooth Streaming 720p";
+            var outputAssetName = "Output Asset Name";
+            var outputAssetOptions = AssetCreationOptions.None;
+            this.asset = this.context.Assets.Create("TestAsset", AssetCreationOptions.None);
+
+            var job = this.context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguration, this.asset, outputAssetName, outputAssetOptions);
+
+            this.context.StartExecutionProgressTask(job, j => { }, CancellationToken.None);
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Media\smallwmv1.wmv")]
+        public void ShouldStartExecutionProgressTaskAndInvokeCallbackWhenStateOrOverallProgressChange()
+        {
+            var mediaProcessorName = "Windows Azure Media Encoder";
+            var taskConfiguration = "H264 Smooth Streaming 720p";
+            var outputAssetName = "Output Asset Name";
+            var outputAssetOptions = AssetCreationOptions.None;
+            this.asset = this.context.CreateAssetFromFile("smallwmv1.wmv", AssetCreationOptions.None);
+
+            var job = this.context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguration, this.asset, outputAssetName, outputAssetOptions);
+            job.Submit();
+
+            var previousState = job.State;
+            var previousOverallProgress = job.GetOverallProgress();
+            var callbackInvocations = 0;
+
+            var executionProgressTask = this.context.StartExecutionProgressTask(
+                job,
+                j =>
+                {
+                    callbackInvocations++;
+
+                    Assert.IsTrue((j.State != previousState) || (j.GetOverallProgress() != previousOverallProgress));
+
+                    previousState = j.State;
+                    previousOverallProgress = j.GetOverallProgress();
+                },
+                CancellationToken.None);
+            executionProgressTask.Wait();
+
+            Assert.IsTrue(callbackInvocations > 0);
+            Assert.AreEqual(JobState.Finished, previousState);
+            Assert.AreEqual(100, previousOverallProgress);
+
+            // We must manually refresh the job instance.
+            job = this.context.Jobs.Where(j => j.Id == job.Id).First();
+
+            Assert.AreEqual(JobState.Finished, job.State);
+            Assert.AreEqual(1, job.OutputMediaAssets.Count);
+
+            this.outputAsset = job.OutputMediaAssets[0];
+
+            Assert.IsNotNull(this.outputAsset);
+            Assert.AreEqual(outputAssetName, this.outputAsset.Name);
+            Assert.AreEqual(outputAssetOptions, this.outputAsset.Options);
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Media\smallwmv1.wmv")]
+        public void ShouldStartExecutionProgressTaskWhenExecutionProgressChangedCallbackIsNull()
+        {
+            var mediaProcessorName = "Windows Azure Media Encoder";
+            var taskConfiguration = "H264 Smooth Streaming 720p";
+            var outputAssetName = "Output Asset Name";
+            var outputAssetOptions = AssetCreationOptions.None;
+            this.asset = this.context.CreateAssetFromFile("smallwmv1.wmv", AssetCreationOptions.None);
+
+            var job = this.context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguration, this.asset, outputAssetName, outputAssetOptions);
+            job.Submit();
+
+            this.context.StartExecutionProgressTask(job, null, CancellationToken.None).Wait();
+
+            // We must manually refresh the job instance.
+            job = this.context.Jobs.Where(j => j.Id == job.Id).First();
+
+            Assert.AreEqual(JobState.Finished, job.State);
+            Assert.AreEqual(1, job.OutputMediaAssets.Count);
+
+            this.outputAsset = job.OutputMediaAssets[0];
+
+            Assert.IsNotNull(this.outputAsset);
+            Assert.AreEqual(outputAssetName, this.outputAsset.Name);
+            Assert.AreEqual(outputAssetOptions, this.outputAsset.Options);
+        }
+
         [TestInitialize]
         public void Initialize()
         {
@@ -163,30 +356,6 @@ namespace MediaServices.Client.Extensions.Tests
             {
                 this.outputAsset.Delete();
             }
-        }
-
-        private static void AssertDownloadedFile(string originalFolderPath, string downloadFolderPath, string fileName, DownloadProgressChangedEventArgs downloadProgressChangedEventArgs = null)
-        {
-            var expected = new FileInfo(Path.Combine(originalFolderPath, fileName));
-            var result = new FileInfo(Path.Combine(downloadFolderPath, fileName));
-
-            Assert.AreEqual(expected.Length, result.Length);
-
-            if (downloadProgressChangedEventArgs != null)
-            {
-                Assert.AreEqual(expected.Length, downloadProgressChangedEventArgs.BytesDownloaded);
-                Assert.AreEqual(expected.Length, downloadProgressChangedEventArgs.TotalBytes);
-                Assert.AreEqual(100, downloadProgressChangedEventArgs.Progress);
-            }
-        }
-
-        private static void AssertUploadedFile(string originalFolderPath, string fileName, UploadProgressChangedEventArgs uploadProgressChangedEventArgs)
-        {
-            var expected = new FileInfo(Path.Combine(originalFolderPath, fileName));
-
-            Assert.AreEqual(expected.Length, uploadProgressChangedEventArgs.BytesUploaded);
-            Assert.AreEqual(expected.Length, uploadProgressChangedEventArgs.TotalBytes);
-            Assert.AreEqual(100, uploadProgressChangedEventArgs.Progress);
         }
 
         private CloudMediaContext CreateContext()

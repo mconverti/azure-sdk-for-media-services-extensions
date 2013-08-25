@@ -19,7 +19,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Contains extension methods and helpers related to the <see cref="Microsoft.WindowsAzure.MediaServices.Client.IAsset"/> interface.
+    /// Contains extension methods and helpers related to the <see cref="IAsset"/> interface.
     /// </summary>
     public static class AssetExtensions
     {

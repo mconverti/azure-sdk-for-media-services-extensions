@@ -113,30 +113,6 @@ namespace MediaServices.Client.Extensions.Tests
             }
         }
 
-        private static void AssertDownloadedFile(string originalFolderPath, string downloadFolderPath, string fileName, DownloadProgressChangedEventArgs downloadProgressChangedEventArgs = null)
-        {
-            var expected = new FileInfo(Path.Combine(originalFolderPath, fileName));
-            var result = new FileInfo(Path.Combine(downloadFolderPath, fileName));
-
-            Assert.AreEqual(expected.Length, result.Length);
-
-            if (downloadProgressChangedEventArgs != null)
-            {
-                Assert.AreEqual(expected.Length, downloadProgressChangedEventArgs.BytesDownloaded);
-                Assert.AreEqual(expected.Length, downloadProgressChangedEventArgs.TotalBytes);
-                Assert.AreEqual(100, downloadProgressChangedEventArgs.Progress);
-            }
-        }
-
-        private static void AssertUploadedFile(string originalFolderPath, string fileName, UploadProgressChangedEventArgs uploadProgressChangedEventArgs)
-        {
-            var expected = new FileInfo(Path.Combine(originalFolderPath, fileName));
-
-            Assert.AreEqual(expected.Length, uploadProgressChangedEventArgs.BytesUploaded);
-            Assert.AreEqual(expected.Length, uploadProgressChangedEventArgs.TotalBytes);
-            Assert.AreEqual(100, uploadProgressChangedEventArgs.Progress);
-        }
-
         private CloudMediaContext CreateContext()
         {
             return new CloudMediaContext(
