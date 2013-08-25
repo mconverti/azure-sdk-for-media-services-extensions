@@ -137,7 +137,7 @@ IAsset asset = null;
 Uri mpegDashUri = asset.GetMpegDashUri();
 ```
 
-## Get latest Media Processor by name
+### Get latest Media Processor by name
 Get the latest version of a media processor filtering by its name using a single extension method for the [MediaProcessorBaseCollection](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.mediaprocessorbasecollection.aspx) class.
 ```csharp
 CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
@@ -146,7 +146,7 @@ CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%
 IMediaProcessor processor = context.MediaProcessors.GetLatestMediaProcessorByName("Windows Azure Media Encoder");
 ```
 
-## Prepare a Job with a single Task
+### Prepare a Job with a single Task
 Prepare a job with a single task ready to be submitted using a single extension method for the [MediaContextBase](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.mediacontextbase.aspx) class. There is an additional overload with different parameters. 
 ```csharp
 CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
@@ -173,7 +173,7 @@ IJob job = context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguratio
 // ...
 ```
 
-## Get Job overall progress
+### Get Job overall progress
 Get the overall progress of a job by aggregating the progress of all its tasks using a single extension method for the [IJob](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ijob.aspx) interface.
 ```csharp
 CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
@@ -196,7 +196,32 @@ job = context.Jobs.Where(j => j.Id == job.Id).First();
 double jobOverallProgress = job.GetOverallProgress();
 ```
 
-## Parse Media Services error messages in XML format
+### Start Job execution progress task to notify when its state or overall progress change
+Start a [Task](http://msdn.microsoft.com/library/system.threading.tasks.task.aspx) to monitor a job progress using a single extension method for the [IJob](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ijob.aspx) interface. The difference with the [IJob.GetExecutionProgressTask](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ijob.getexecutionprogresstask.aspx) method is that this extension invokes a callback when the job state or overall progress change.
+```csharp
+CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
+
+// The input asset for the task. Get a reference to it from the context.
+IAsset inputAsset = null;
+
+// Prepare a job ready to be submitted with a single task with one input/output asset using a single extension method.
+IJob job = context.PrepareJobWithSingleTask("Windows Azure Media Encoder", "H264 Adaptive Bitrate MP4 Set 720p", inputAsset, "OutputAssetName", AssetCreationOptions.None);
+
+// Submit the job.
+job.Submit();
+
+// Start a task to monitor the job progress by invoking a callback when its state or overall progress change in a single extension method.
+await this.context.StartExecutionProgressTask(
+    job,
+    j =>
+    {
+        Console.WriteLine("Current job state: {0}", j.State);
+        Console.WriteLine("Current job progress: {0}", j.GetOverallProgress());
+    },
+    CancellationToken.None);
+```
+
+### Parse Media Services error messages in XML format
 Parse exceptions with Windows Azure Media Services error messages in XML format.
 ```csharp
 CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
