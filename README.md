@@ -107,7 +107,7 @@ IAsset asset = null;
 IAssetFile manifestAssetFile = asset.GetManifestAssetFile();
 ```
 
-### Get Smooth Streaming URL
+### Get Smooth Streaming URL for Asset
 Get the Smooth Streaming URL of a multi-bitrate Smooth Streaming or MP4 asset using a single extension method for the [IAsset](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.iasset.aspx) interface. This methods requires the asset to contain an ISM manifest asset file and that you previously created an Origin locator for the asset; otherwise it returns _null_.
 ```csharp
 // The asset with multi-bitrate Smooth Streaming or MP4 content. Get a reference to it from the context.
@@ -117,7 +117,7 @@ IAsset asset = null;
 Uri smoothStreamingUri = asset.GetSmoothStreamingUri();
 ```
 
-### Get HLS URL
+### Get HLS URL for Asset
 Get the HLS URL of a multi-bitrate Smooth Streaming or MP4 asset using a single extension method for the [IAsset](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.iasset.aspx) interface. This methods requires the asset to contain an ISM manifest asset file and that you previously created an Origin locator for the asset; otherwise it returns _null_.
 ```csharp
 // The asset with multi-bitrate Smooth Streaming or MP4 content. Get a reference to it from the context.
@@ -127,7 +127,7 @@ IAsset asset = null;
 Uri hlsUri = asset.GetHlsUri();
 ```
 
-### Get MPEG-DASH URL
+### Get MPEG-DASH URL for Asset
 Get the MPEG-DASH URL of a multi-bitrate Smooth Streaming or MP4 asset using a single extension method for the [IAsset](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.iasset.aspx) interface. This methods requires the asset to contain an ISM manifest asset file and that you previously created an Origin locator for the asset; otherwise it returns _null_.
 ```csharp
 // The asset with multi-bitrate Smooth Streaming or MP4 content. Get a reference to it from the context.
@@ -137,7 +137,7 @@ IAsset asset = null;
 Uri mpegDashUri = asset.GetMpegDashUri();
 ```
 
-## Get the latest Media Processor by name
+## Get latest Media Processor by name
 Get the latest version of a media processor filtering by its name using a single extension method for the [MediaProcessorBaseCollection](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.mediaprocessorbasecollection.aspx) class.
 ```csharp
 CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
@@ -155,9 +155,9 @@ CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%
 string mediaProcessorName = "Windows Azure Media Encoder";
 
 // The task configuration.
-string taskConfiguration = "H264 Smooth Streaming 720p";
+string taskConfiguration = "H264 Adaptive Bitrate MP4 Set 720p";
 
-// The input asset for the task.  Get a reference to it from the context.
+// The input asset for the task. Get a reference to it from the context.
 IAsset inputAsset = null;
 
 // The name for the output asset of the task.
@@ -173,11 +173,33 @@ IJob job = context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguratio
 // ...
 ```
 
+## Get Job overall progress
+```csharp
+CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
+
+// The input asset for the task. Get a reference to it from the context.
+IAsset inputAsset = null;
+
+// Prepare a job ready to be submitted with a single task with one input/output asset using a single extension method.
+IJob job = context.PrepareJobWithSingleTask("Windows Azure Media Encoder", "H264 Adaptive Bitrate MP4 Set 720p", inputAsset, "OutputAssetName", AssetCreationOptions.None);
+
+// Submit the job.
+job.Submit();
+
+// ...
+
+// Refresh the job instance.
+job = context.Jobs.Where(j => j.Id == job.Id).First();
+
+// Get the overall progress of the job by aggregating the progress of all its tasks in a single extension method. 
+double jobOverallProgress = job.GetOverallProgress();
+```
+
 ## Parse Media Services error messages in XML format
 Parse exceptions with Windows Azure Media Services error messages in XML format.
 ```csharp
 CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
-            
+
 // Create an empty asset.
 IAsset asset = context.Assets.Create("MyAssetName", AssetCreationOptions.None);
 
