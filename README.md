@@ -174,6 +174,7 @@ IJob job = context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguratio
 ```
 
 ## Get Job overall progress
+Get the overall progress of a job by aggregating the progress of all its tasks using a single extension method for the [IJob](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ijob.aspx) interface.
 ```csharp
 CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
 
