@@ -11,6 +11,7 @@ After installing the package, a **MediaServicesExtensions** folder will be added
 - AssetExtensions.cs: Contains useful extension methods and helpers related to the [IAsset](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.iasset.aspx) interface.
 - JobExtensions.cs: Contains useful extension methods and helpers related to the [IJob](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ijob.aspx) interface.
 - LocatorExtensions.cs: Contains useful extension methods and helpers related to the [ILocator](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ilocator.aspx) interface.
+- UrlExtensionsFixture.cs: Contains extension methods and helpers related to the [Uri](http://msdn.microsoft.com/library/system.uri.aspx) and [String](http://msdn.microsoft.com/library/system.string.aspx) classes.
 - MediaServicesExceptionParser.cs: Contains helper methods to parse Windows Azure Media Services error messages in XML format.
 
 ## Extension Methods and Helpers available
@@ -113,6 +114,8 @@ Get the Smooth Streaming URL of a multi-bitrate Smooth Streaming or MP4 asset us
 // The asset with multi-bitrate Smooth Streaming or MP4 content. Get a reference to it from the context.
 IAsset asset = null;
 
+// Make sure to create an Origin locator.
+
 // Get the Smooth Streaming URL for the asset.
 Uri smoothStreamingUri = asset.GetSmoothStreamingUri();
 ```
@@ -122,6 +125,8 @@ Get the HLS URL of a multi-bitrate Smooth Streaming or MP4 asset using a single 
 ```csharp
 // The asset with multi-bitrate Smooth Streaming or MP4 content. Get a reference to it from the context.
 IAsset asset = null;
+
+// Make sure to create an Origin locator.
 
 // Get the HLS URL for the asset.
 Uri hlsUri = asset.GetHlsUri();
@@ -133,8 +138,30 @@ Get the MPEG-DASH URL of a multi-bitrate Smooth Streaming or MP4 asset using a s
 // The asset with multi-bitrate Smooth Streaming or MP4 content. Get a reference to it from the context.
 IAsset asset = null;
 
+// Make sure to create an Origin locator.
+
 // Get the MPEG-DASH URL for the asset.
 Uri mpegDashUri = asset.GetMpegDashUri();
+```
+
+### Save Uri to file
+Save an Uri to a local file using a extension method for the [Uri](http://msdn.microsoft.com/library/system.uri.aspx) class. It creates the file if does not exist; otherwise, appends a new line to the end.
+```csharp
+// The asset with multi-bitrate content. Get a reference to it from the context.
+IAsset asset = null;
+
+// Make sure to create an Origin locator.
+
+// Get the URL's for the asset.
+Uri smoothStreamingUri = asset.GetSmoothStreamingUri();
+Uri hlsUri = asset.GetHlsUri();
+Uri mpegDashUri = asset.GetMpegDashUri();
+
+// Save the URL's to a file.
+string filePath = @"C:\asset-urls.txt";
+smoothStreamingUri.Save(filePath);
+hlsUri.Save(filePath);
+mpegDashUri.Save(filePath);
 ```
 
 ### Get latest Media Processor by name
