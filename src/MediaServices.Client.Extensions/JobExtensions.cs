@@ -133,8 +133,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="jobRefreshIntervalInMilliseconds">The time interval in milliseconds to refresh the <paramref name="job"/>.</param>
         /// <param name="executionProgressChangedCallback">A callback that is invoked when the <paramref name="job"/> state or overall progress change.</param>
         /// <param name="cancellationToken">The <see cref="System.Threading.CancellationToken"/> instance used for cancellation.</param>
-        /// <returns>A started <see cref="System.Threading.Tasks.Task"/> to monitor the <paramref name="job"/> progress by invoking the <paramref name="executionProgressChangedCallback"/> when its state or overall progress change.</returns>
-        public static Task StartExecutionProgressTask(this MediaContextBase context, IJob job, int jobRefreshIntervalInMilliseconds, Action<IJob> executionProgressChangedCallback, CancellationToken cancellationToken)
+        /// <returns>A started <see cref="System.Threading.Tasks.Task&lt;IJob&gt;"/> instance to monitor the <paramref name="job"/> progress by invoking the <paramref name="executionProgressChangedCallback"/> when its state or overall progress change.</returns>
+        public static Task<IJob> StartExecutionProgressTask(this MediaContextBase context, IJob job, int jobRefreshIntervalInMilliseconds, Action<IJob> executionProgressChangedCallback, CancellationToken cancellationToken)
         {
             if (context == null)
             {
@@ -171,6 +171,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                                 executionProgressChangedCallback(refreshedJob);
                             }
                         }
+
+                        return refreshedJob;
                     },
                     job,
                     cancellationToken);
@@ -183,8 +185,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="job">The <see cref="IJob"/> instance.</param>
         /// <param name="executionProgressChangedCallback">A callback that is invoked when the <paramref name="job"/> state or overall progress change.</param>
         /// <param name="cancellationToken">The <see cref="System.Threading.CancellationToken"/> instance used for cancellation.</param>
-        /// <returns>A started <see cref="System.Threading.Tasks.Task"/> to monitor the <paramref name="job"/> progress by invoking the <paramref name="executionProgressChangedCallback"/> when its state or overall progress change.</returns>
-        public static Task StartExecutionProgressTask(this MediaContextBase context, IJob job, Action<IJob> executionProgressChangedCallback, CancellationToken cancellationToken)
+        /// <returns>A started <see cref="System.Threading.Tasks.Task&lt;IJob&gt;"/> instance to monitor the <paramref name="job"/> progress by invoking the <paramref name="executionProgressChangedCallback"/> when its state or overall progress change.</returns>
+        public static Task<IJob> StartExecutionProgressTask(this MediaContextBase context, IJob job, Action<IJob> executionProgressChangedCallback, CancellationToken cancellationToken)
         {
             return context.StartExecutionProgressTask(job, DefaultJobRefreshIntervalInMilliseconds, executionProgressChangedCallback, cancellationToken);
         }

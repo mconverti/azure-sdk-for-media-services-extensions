@@ -289,16 +289,14 @@ namespace MediaServices.Client.Extensions.Tests
                     previousOverallProgress = j.GetOverallProgress();
                 },
                 CancellationToken.None);
-            executionProgressTask.Wait();
+            job = executionProgressTask.Result;
 
             Assert.IsTrue(callbackInvocations > 0);
             Assert.AreEqual(JobState.Finished, previousState);
             Assert.AreEqual(100, previousOverallProgress);
 
-            // We must manually refresh the job instance.
-            job = this.context.Jobs.Where(j => j.Id == job.Id).First();
-
             Assert.AreEqual(JobState.Finished, job.State);
+            Assert.AreEqual(100, job.GetOverallProgress());
             Assert.AreEqual(1, job.OutputMediaAssets.Count);
 
             this.outputAsset = job.OutputMediaAssets[0];
@@ -321,12 +319,10 @@ namespace MediaServices.Client.Extensions.Tests
             var job = this.context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguration, this.asset, outputAssetName, outputAssetOptions);
             job.Submit();
 
-            this.context.StartExecutionProgressTask(job, null, CancellationToken.None).Wait();
-
-            // We must manually refresh the job instance.
-            job = this.context.Jobs.Where(j => j.Id == job.Id).First();
+            job = this.context.StartExecutionProgressTask(job, null, CancellationToken.None).Result;
 
             Assert.AreEqual(JobState.Finished, job.State);
+            Assert.AreEqual(100, job.GetOverallProgress());
             Assert.AreEqual(1, job.OutputMediaAssets.Count);
 
             this.outputAsset = job.OutputMediaAssets[0];
