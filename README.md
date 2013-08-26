@@ -246,7 +246,7 @@ double jobOverallProgress = job.GetOverallProgress();
 ```
 
 ### Start Job execution progress task to notify when its state or overall progress change
-Start a [Task](http://msdn.microsoft.com/library/system.threading.tasks.task.aspx) to monitor a job progress using a single extension method for the [IJob](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ijob.aspx) interface. The difference with the [IJob.GetExecutionProgressTask](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ijob.getexecutionprogresstask.aspx) method is that this extension invokes a callback when the job state or overall progress change.
+Start a [Task](http://msdn.microsoft.com/library/system.threading.tasks.task.aspx) to monitor a job progress using a single extension method for the [IJob](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ijob.aspx) interface. The difference with the [IJob.GetExecutionProgressTask](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ijob.getexecutionprogresstask.aspx) method is that this extension invokes a callback when the job state or overall progress change. There is an additional overload with different parameters.
 ```csharp
 CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
 
