@@ -507,33 +507,67 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Returns the Smooth Streaming URL. 
+        /// Returns the Smooth Streaming URL of the <paramref name="asset"/>; otherwise, null.
         /// </summary>
         /// <param name="asset">The <see cref="IAsset"/> instance.</param>
-        /// <returns>A <see cref="System.Uri"/> representing the Smooth Streaming URL.</returns>
+        /// <returns>A <see cref="System.Uri"/> representing the Smooth Streaming URL of the <paramref name="asset"/>; otherwise, null.</returns>
         public static Uri GetSmoothStreamingUri(this IAsset asset)
         {
             return asset.GetStreamingUri(string.Empty);
         }
 
         /// <summary>
-        /// Returns the HLS URL. 
+        /// Returns the HLS URL of the <paramref name="asset"/>; otherwise, null.
         /// </summary>
         /// <param name="asset">The <see cref="IAsset"/> instance.</param>
-        /// <returns>A <see cref="System.Uri"/> representing the HLS URL.</returns>
+        /// <returns>A <see cref="System.Uri"/> representing the HLS URL of the <paramref name="asset"/>; otherwise, null.</returns>
         public static Uri GetHlsUri(this IAsset asset)
         {
             return asset.GetStreamingUri(HlsStreamingParameter);
         }
 
         /// <summary>
-        /// Returns the MPEG-DASH URL. 
+        /// Returns the MPEG-DASH URL of the <paramref name="asset"/>; otherwise, null.
         /// </summary>
         /// <param name="asset">The <see cref="IAsset"/> instance.</param>
-        /// <returns>A <see cref="System.Uri"/> representing the MPEG-DASH URL.</returns>
+        /// <returns>A <see cref="System.Uri"/> representing the MPEG-DASH URL of the <paramref name="asset"/>; otherwise, null.</returns>
         public static Uri GetMpegDashUri(this IAsset asset)
         {
             return asset.GetStreamingUri(MpegDashStreamingParameter);
+        }
+
+        /// <summary>
+        /// Returns the SAS URL of the <paramref name="assetFile"/> for progressive download; otherwise, null.
+        /// </summary>
+        /// <param name="assetFile">The <see cref="IAssetFile"/> instance.</param>
+        /// <returns>A <see cref="System.Uri"/> representing the SAS URL of the <paramref name="assetFile"/> for progressive download; otherwise, null.</returns>
+        public static Uri GetSasUri(this IAssetFile assetFile)
+        {
+            if (assetFile == null)
+            {
+                throw new ArgumentNullException("assetFile", "The asset file cannot be null.");
+            }
+
+            Uri sasUri = null;
+            IAsset asset = assetFile.Asset;
+            if (asset != null)
+            {
+                ILocator sasLocator = asset
+                    .Locators
+                    .ToList()
+                    .Where(l => l.Type == LocatorType.Sas)
+                    .OrderBy(l => l.ExpirationDateTime)
+                    .LastOrDefault();
+                if (sasLocator != null)
+                {
+                    UriBuilder builder = new UriBuilder(new Uri(sasLocator.Path, UriKind.Absolute));
+                    builder.Path = Path.Combine(builder.Path, assetFile.Name);
+
+                    sasUri = builder.Uri;
+                }
+            }
+
+            return sasUri;
         }
 
         private static async Task<IAssetFile> CreateAssetFileFromLocalFileAsync(this CloudMediaContext context, IAsset asset, string filePath, ILocator sasLocator, EventHandler<UploadProgressChangedEventArgs> uploadProgressChangedEventArgs, CancellationToken cancellationToken)
@@ -573,7 +607,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             IAssetFile manifestAssetFile = asset.GetManifestAssetFile();
             if (manifestAssetFile != null)
             {
-                var originLocator = asset.Locators.ToList().Where(l => l.Type == LocatorType.OnDemandOrigin).FirstOrDefault();
+                ILocator originLocator = asset
+                    .Locators
+                    .ToList()
+                    .Where(l => l.Type == LocatorType.OnDemandOrigin)
+                    .OrderBy(l => l.ExpirationDateTime)
+                    .FirstOrDefault();
                 if (originLocator != null)
                 {
                     smoothStreamingUri = new Uri(

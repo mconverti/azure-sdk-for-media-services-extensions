@@ -15,6 +15,7 @@ namespace MediaServices.Client.Extensions.Tests
     using System.Configuration;
     using System.IO;
     using System.Linq;
+    using System.Net.Http;
     using System.Threading;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Microsoft.WindowsAzure.MediaServices.Client;
@@ -490,6 +491,35 @@ namespace MediaServices.Client.Extensions.Tests
             IAsset nullAsset = null;
 
             nullAsset.GetSmoothStreamingUri();
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Media\smallwmv1.wmv")]
+        public void ShouldGetSasUri()
+        {
+            this.asset = this.context.CreateAssetFromFile("smallwmv1.wmv", AssetCreationOptions.None);
+
+            var locator = this.context.CreateLocator(this.asset, LocatorType.Sas, AccessPermissions.Read, TimeSpan.FromDays(1));
+
+            var assetFiles = this.asset.AssetFiles.First();
+
+            var sasUri = assetFiles.GetSasUri();
+
+            Assert.IsNotNull(sasUri);
+
+            var client = new HttpClient();
+            var response = client.GetAsync(sasUri, HttpCompletionOption.ResponseHeadersRead).Result;
+
+            Assert.IsTrue(response.IsSuccessStatusCode);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ShouldThrowGetSasUriIfAssetFileIsNull()
+        {
+            IAssetFile nullAssetFile = null;
+
+            nullAssetFile.GetSasUri();
         }
 
         [TestInitialize]
