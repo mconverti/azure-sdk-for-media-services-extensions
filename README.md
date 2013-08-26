@@ -152,7 +152,7 @@ IAsset asset = null;
 
 // Make sure to create a SAS locator for the asset.
 
-IAssetFile assetFile = asset.AssetFiles.ToList().Where(af => af.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase)).First();
+IAssetFile assetFile = asset.AssetFiles.ToList().Where(af => af.Name.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase)).First();
 
 // Get the SAS URL of the asset file for progressive download.
 Uri sasUri = assetFile.GetSasUri();
