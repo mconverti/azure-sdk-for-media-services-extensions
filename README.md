@@ -260,7 +260,7 @@ IJob job = context.PrepareJobWithSingleTask("Windows Azure Media Encoder", "H264
 job.Submit();
 
 // Start a task to monitor the job progress by invoking a callback when its state or overall progress change in a single extension method.
-await this.context.StartExecutionProgressTask(
+job = await this.context.StartExecutionProgressTask(
     job,
     j =>
     {
