@@ -172,7 +172,7 @@ IEnumerable<IAssetFile> mp4AssetFiles = asset
         .ToList()
         .Where(af => af.Name.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase));
 
-// Get the adaptive streaming URL's for the asset.
+// Get the URL's for the asset.
 Uri smoothStreamingUri = asset.GetSmoothStreamingUri();
 Uri hlsUri = asset.GetHlsUri();
 Uri mpegDashUri = asset.GetMpegDashUri();
