@@ -161,21 +161,22 @@ Uri sasUri = assetFile.GetSasUri();
 ### Save Uri to file
 Save an Uri to a local file using a extension method for the [Uri](http://msdn.microsoft.com/library/system.uri.aspx) class. It creates the file if does not exist; otherwise, appends a new line to the end.
 ```csharp
-// The asset with multi-bitrate content. Get a reference to it from the context.
+// The asset with multi-bitrate MP4 content. Get a reference to it from the context.
 IAsset asset = null;
 
 // Make sure to create an Origin locator for the asset.
+// Make sure to create a SAS locator for the asset.
+
+IEnumerable<IAssetFile> mp4AssetFiles = asset
+        .AssetFiles
+        .ToList()
+        .Where(af => af.Name.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase));
 
 // Get the adaptive streaming URL's for the asset.
 Uri smoothStreamingUri = asset.GetSmoothStreamingUri();
 Uri hlsUri = asset.GetHlsUri();
 Uri mpegDashUri = asset.GetMpegDashUri();
-
-// Make sure to create a SAS locator for the asset.
-
-// Get the SAS URL of the asset file for progressive download.
-IAssetFile assetFile = asset.AssetFiles.ToList().Where(af => af.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase)).First();
-Uri sasUri = assetFile.GetSasUri();
+List<Uri> mp4ProgressiveDownloadUris = mp4AssetFiles.Select(af => af.GetSasUri()).ToList();
 
 string filePath = @"C:\asset-urls.txt";
 
@@ -183,7 +184,7 @@ string filePath = @"C:\asset-urls.txt";
 smoothStreamingUri.Save(filePath);
 hlsUri.Save(filePath);
 mpegDashUri.Save(filePath);
-sasUri.Save(filePath);
+mp4ProgressiveDownloadUris.ForEach(uri => uri.Save(filePath));
 ```
 
 ### Get latest Media Processor by name
@@ -223,7 +224,7 @@ IJob job = context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguratio
 ```
 
 ### Get Job overall progress
-Get the overall progress of a job by aggregating the progress of all its tasks using a single extension method for the [IJob](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ijob.aspx) interface.
+Get the overall progress of a job by calculating the average progress of all its tasks using a single extension method for the [IJob](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ijob.aspx) interface.
 ```csharp
 CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
 
@@ -241,7 +242,7 @@ job.Submit();
 // Refresh the job instance.
 job = context.Jobs.Where(j => j.Id == job.Id).First();
 
-// Get the overall progress of the job by aggregating the progress of all its tasks in a single extension method. 
+// Get the overall progress of the job by calculating the average progress of all its tasks using a single extension method.
 double jobOverallProgress = job.GetOverallProgress();
 ```
 
@@ -260,7 +261,7 @@ IJob job = context.PrepareJobWithSingleTask("Windows Azure Media Encoder", "H264
 job.Submit();
 
 // Start a task to monitor the job progress by invoking a callback when its state or overall progress change in a single extension method.
-job = await this.context.StartExecutionProgressTask(
+job = await context.StartExecutionProgressTask(
     job,
     j =>
     {
