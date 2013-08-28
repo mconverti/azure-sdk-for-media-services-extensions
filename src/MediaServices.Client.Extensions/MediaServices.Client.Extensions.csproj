@@ -75,6 +75,8 @@
   <ItemGroup>
     <Compile Include="AssetExtensions.cs" />
     <Compile Include="LocatorExtensions.cs" />
+    <Compile Include="MediaEncoderTaskPresetStrings.cs" />
+    <Compile Include="MediaProcessorNames.cs" />
     <Compile Include="MediaServicesExceptionParser.cs" />
     <Compile Include="JobExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

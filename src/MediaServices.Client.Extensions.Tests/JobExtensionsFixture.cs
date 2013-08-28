@@ -29,10 +29,9 @@ namespace MediaServices.Client.Extensions.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void ShouldThrowWhenGetLatestMediaProcessorByNameIfMediaProcessorCollectionIsNull()
         {
-            var mediaProcessorName = "Windows Azure Media Encoder";
             MediaProcessorBaseCollection nullMediaProcessorCollection = null;
 
-            nullMediaProcessorCollection.GetLatestMediaProcessorByName(mediaProcessorName);
+            nullMediaProcessorCollection.GetLatestMediaProcessorByName(MediaProcessorNames.WindowsAzureMediaEncoder);
         }
 
         [TestMethod]
@@ -47,13 +46,12 @@ namespace MediaServices.Client.Extensions.Tests
         [TestMethod]
         public void ShouldGetLatestMediaProcessorByName()
         {
-            var mediaProcessorName = "Windows Azure Media Encoder";
-            var mediaProcessor = this.context.MediaProcessors.GetLatestMediaProcessorByName(mediaProcessorName);
+            var mediaProcessor = this.context.MediaProcessors.GetLatestMediaProcessorByName(MediaProcessorNames.WindowsAzureMediaEncoder);
 
             Assert.IsNotNull(mediaProcessor);
 
             var expectedMediaProcessor = this.context.MediaProcessors
-                .Where(mp => mp.Name == mediaProcessorName)
+                .Where(mp => mp.Name == MediaProcessorNames.WindowsAzureMediaEncoder)
                 .ToList()
                 .Select(mp => new { mp.Id, mp.Name, Version = new Version(mp.Version) })
                 .OrderBy(mp => mp.Version)
@@ -68,8 +66,8 @@ namespace MediaServices.Client.Extensions.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void ShouldThrowPrepareJobWithSingleTaskIfContextIsNull()
         {
-            var mediaProcessorName = "Windows Azure Media Encoder";
-            var taskConfiguration = "H264 Smooth Streaming 720p";
+            var mediaProcessorName = MediaProcessorNames.WindowsAzureMediaEncoder;
+            var taskConfiguration = MediaEncoderTaskPresetStrings.H264SmoothStreaming720p;
             var outputAssetName = "Output Asset Name";
             var outputAssetOptions = AssetCreationOptions.None;
             this.asset = this.context.Assets.Create("empty", AssetCreationOptions.None);
@@ -82,8 +80,8 @@ namespace MediaServices.Client.Extensions.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void ShouldThrowPrepareJobWithSingleTaskIfInputAssetIsNull()
         {
-            var mediaProcessorName = "Windows Azure Media Encoder";
-            var taskConfiguration = "H264 Smooth Streaming 720p";
+            var mediaProcessorName = MediaProcessorNames.WindowsAzureMediaEncoder;
+            var taskConfiguration = MediaEncoderTaskPresetStrings.H264SmoothStreaming720p;
             var outputAssetName = "Output Asset Name";
             var outputAssetOptions = AssetCreationOptions.None;
             IAsset inputAsset = null;
@@ -96,7 +94,7 @@ namespace MediaServices.Client.Extensions.Tests
         public void ShouldThrowPrepareJobWithSingleTaskIfMediaProcessorNameIsUnknown()
         {
             var mediaProcessorName = "Unknown Media Processor";
-            var taskConfiguration = "H264 Smooth Streaming 720p";
+            var taskConfiguration = MediaEncoderTaskPresetStrings.H264SmoothStreaming720p;
             var outputAssetName = "Output Asset Name";
             var outputAssetOptions = AssetCreationOptions.None;
             this.asset = this.context.Assets.Create("empty", AssetCreationOptions.None);
@@ -108,8 +106,8 @@ namespace MediaServices.Client.Extensions.Tests
         [DeploymentItem(@"Media\smallwmv1.wmv")]
         public void ShouldPrepareJobWithSingleTask()
         {
-            var mediaProcessorName = "Windows Azure Media Encoder";
-            var taskConfiguration = "H264 Smooth Streaming 720p";
+            var mediaProcessorName = MediaProcessorNames.WindowsAzureMediaEncoder;
+            var taskConfiguration = MediaEncoderTaskPresetStrings.H264SmoothStreaming720p;
             var outputAssetName = "Output Asset Name";
             var outputAssetOptions = AssetCreationOptions.None;
             this.asset = this.context.CreateAssetFromFile("smallwmv1.wmv", AssetCreationOptions.None);
@@ -249,8 +247,8 @@ namespace MediaServices.Client.Extensions.Tests
         [ExpectedException(typeof(ArgumentException))]
         public void ShouldThrowStartExecutionProgressTaskIfJobDoesNotHaveValidId()
         {
-            var mediaProcessorName = "Windows Azure Media Encoder";
-            var taskConfiguration = "H264 Smooth Streaming 720p";
+            var mediaProcessorName = MediaProcessorNames.WindowsAzureMediaEncoder;
+            var taskConfiguration = MediaEncoderTaskPresetStrings.H264SmoothStreaming720p;
             var outputAssetName = "Output Asset Name";
             var outputAssetOptions = AssetCreationOptions.None;
             this.asset = this.context.Assets.Create("TestAsset", AssetCreationOptions.None);
@@ -264,8 +262,8 @@ namespace MediaServices.Client.Extensions.Tests
         [DeploymentItem(@"Media\smallwmv1.wmv")]
         public void ShouldStartExecutionProgressTaskAndInvokeCallbackWhenStateOrOverallProgressChange()
         {
-            var mediaProcessorName = "Windows Azure Media Encoder";
-            var taskConfiguration = "H264 Smooth Streaming 720p";
+            var mediaProcessorName = MediaProcessorNames.WindowsAzureMediaEncoder;
+            var taskConfiguration = MediaEncoderTaskPresetStrings.H264SmoothStreaming720p;
             var outputAssetName = "Output Asset Name";
             var outputAssetOptions = AssetCreationOptions.None;
             this.asset = this.context.CreateAssetFromFile("smallwmv1.wmv", AssetCreationOptions.None);
@@ -310,8 +308,8 @@ namespace MediaServices.Client.Extensions.Tests
         [DeploymentItem(@"Media\smallwmv1.wmv")]
         public void ShouldStartExecutionProgressTaskWhenExecutionProgressChangedCallbackIsNull()
         {
-            var mediaProcessorName = "Windows Azure Media Encoder";
-            var taskConfiguration = "H264 Smooth Streaming 720p";
+            var mediaProcessorName = MediaProcessorNames.WindowsAzureMediaEncoder;
+            var taskConfiguration = MediaEncoderTaskPresetStrings.H264SmoothStreaming720p;
             var outputAssetName = "Output Asset Name";
             var outputAssetOptions = AssetCreationOptions.None;
             this.asset = this.context.CreateAssetFromFile("smallwmv1.wmv", AssetCreationOptions.None);
