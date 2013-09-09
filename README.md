@@ -13,6 +13,8 @@ After installing the package, a **MediaServicesExtensions** folder will be added
 - LocatorExtensions.cs: Contains useful extension methods and helpers related to the [ILocator](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ilocator.aspx) interface.
 - UrlExtensionsFixture.cs: Contains extension methods and helpers related to the [Uri](http://msdn.microsoft.com/library/system.uri.aspx) and [String](http://msdn.microsoft.com/library/system.string.aspx) classes.
 - MediaServicesExceptionParser.cs: Contains helper methods to parse Windows Azure Media Services error messages in XML format.
+- MediaEncoderTaskPresetStrings.cs: Contains constants with the names of the available [Task Preset Strings for the Windows Azure Media Encoder](http://msdn.microsoft.com/en-us/library/windowsazure/jj129582.aspx).
+- MediaProcessorNames.cs: Contains constants with the names of the available [Media Processors](http://msdn.microsoft.com/en-us/library/windowsazure/jj129580.aspx).
 
 ## Extension Methods and Helpers available
 
@@ -193,7 +195,7 @@ Get the latest version of a media processor filtering by its name using a single
 CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
 
 // Get the latest version of a media processor by its name using a single extension method.
-IMediaProcessor processor = context.MediaProcessors.GetLatestMediaProcessorByName("Windows Azure Media Encoder");
+IMediaProcessor processor = context.MediaProcessors.GetLatestMediaProcessorByName(MediaProcessorNames.WindowsAzureMediaEncoder);
 ```
 
 ### Prepare a Job with a single Task
@@ -202,10 +204,10 @@ Prepare a job with a single task ready to be submitted using a single extension 
 CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
 
 // The media processor name used in the job's task.
-string mediaProcessorName = "Windows Azure Media Encoder";
+string mediaProcessorName = MediaProcessorNames.WindowsAzureMediaEncoder;
 
 // The task configuration.
-string taskConfiguration = "H264 Adaptive Bitrate MP4 Set 720p";
+string taskConfiguration = MediaEncoderTaskPresetStrings.H264AdaptiveBitrateMP4Set720p;
 
 // The input asset for the task. Get a reference to it from the context.
 IAsset inputAsset = null;
@@ -232,7 +234,7 @@ CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%
 IAsset inputAsset = null;
 
 // Prepare a job ready to be submitted with a single task with one input/output asset using a single extension method.
-IJob job = context.PrepareJobWithSingleTask("Windows Azure Media Encoder", "H264 Adaptive Bitrate MP4 Set 720p", inputAsset, "OutputAssetName", AssetCreationOptions.None);
+IJob job = context.PrepareJobWithSingleTask(MediaProcessorNames.WindowsAzureMediaEncoder, MediaEncoderTaskPresetStrings.H264AdaptiveBitrateMP4Set720p, inputAsset, "OutputAssetName", AssetCreationOptions.None);
 
 // Submit the job.
 job.Submit();
@@ -255,7 +257,7 @@ CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%
 IAsset inputAsset = null;
 
 // Prepare a job ready to be submitted with a single task with one input/output asset using a single extension method.
-IJob job = context.PrepareJobWithSingleTask("Windows Azure Media Encoder", "H264 Adaptive Bitrate MP4 Set 720p", inputAsset, "OutputAssetName", AssetCreationOptions.None);
+IJob job = context.PrepareJobWithSingleTask(MediaProcessorNames.WindowsAzureMediaEncoder, MediaEncoderTaskPresetStrings.H264AdaptiveBitrateMP4Set720p, inputAsset, "OutputAssetName", AssetCreationOptions.None);
 
 // Submit the job.
 job.Submit();
