@@ -3,7 +3,7 @@
   <metadata>
     <id>windowsazure.mediaservices.extensions</id>
     <title>Extensions for Windows Azure Media Services .NET SDK</title>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
     <authors>Mariano Converti</authors>
     <owners>Mariano Converti</owners>
     <projectUrl>https://github.com/mconverti/azure-sdk-for-media-services-extensions</projectUrl>
