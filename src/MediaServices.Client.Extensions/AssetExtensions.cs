@@ -1,5 +1,5 @@
 ﻿// <copyright file="AssetExtensions.cs" company="open-source">
-//  No rights reserved. Copyright (c) 2013 by Mariano Converti
+//  No rights reserved. Copyright (c) 2013 by mconverti
 //   
 //  Redistribution and use in source and binary forms, with or without modification, are permitted.
 //

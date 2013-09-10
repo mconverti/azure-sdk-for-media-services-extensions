@@ -1,15 +1,19 @@
-﻿ //<copyright file="MediaEncoderTaskPresetStrings.cs" company="open-source">
- //  No rights reserved. Copyright (c) 2013 by mcabral
- //      
- //    Redistribution and use in source and binary forms, with or without modification, are permitted.
- //  
- //    The names of its contributors may not be used to endorse or promote products derived from this software without specific prior written permission.
- //  
- //    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- //</copyright>
+﻿// <copyright file="MediaEncoderTaskPresetStrings.cs" company="open-source">
+//  No rights reserved. Copyright (c) 2013 by mcabral
+//   
+//  Redistribution and use in source and binary forms, with or without modification, are permitted.
+//
+//  The names of its contributors may not be used to endorse or promote products derived from this software without specific prior written permission.
+//
+//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// </copyright>
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
+    /// <summary>
+    /// Contains string constants with the available Task Preset Strings for Windows Azure Media Encoder.
+    /// For more information, please visit http://msdn.microsoft.com/library/windowsazure/jj129582.aspx.
+    /// </summary>
     public static class MediaEncoderTaskPresetStrings
     {
         #region Audio Coding Standard
@@ -41,12 +45,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// and its height will be scaled to match the aspect ratio of the source.
         /// </para>
         /// </summary>
-        public const string VC1Broadband1080P = "VC1 Broadband 1080p";
+        public const string VC1Broadband1080p = "VC1 Broadband 1080p";
 
         /// <summary>
         /// Produces a single Windows Media file with:
-        ///     <para> - 44.1 kHz 16 bits/sample stereo audio CBR encoded at 128 kbps using WMA Pro </para>
-        ///     <para> - 720p video VBR encoded at 4500 kbps using VC-1 Advanced Profile </para>
+        ///     <para> - 44.1 kHz 16 bits/sample stereo audio CBR encoded at 128 kbps using WMA Pro</para>
+        ///     <para> - 720p video VBR encoded at 4500 kbps using VC-1 Advanced Profile</para>
         /// <para>
         /// Use this preset name to produce a downloadable file for 720p (16:9 aspect ratio) content for delivery over 
         /// broadband connections. The output file extension is *.wmv. If the source frame size is not 1280x720, the video 
@@ -54,12 +58,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// to match the aspect ratio of the source.
         /// </para>
         /// </summary>
-        public const string VC1Broadband720P = "VC1 Broadband 720p";
+        public const string VC1Broadband720p = "VC1 Broadband 720p";
 
         /// <summary>
         /// Produces a single Windows Media file with:
-        ///     <para> - 44.1 kHz 16 bits/sample stereo audio CBR encoded at 128 kbps using WMA Pro </para>
-        ///     <para> - SD video VBR encoded at 2200 kbps using VC-1 Advanced Profile </para>
+        ///     <para> - 44.1 kHz 16 bits/sample stereo audio CBR encoded at 128 kbps using WMA Pro</para>
+        ///     <para> - SD video VBR encoded at 2200 kbps using VC-1 Advanced Profile</para>
         /// <para>
         /// Use this preset name to produce a downloadable file for SD (16:9 aspect ratio) content for delivery over broadband 
         /// connections. The output file extension is *.wmv. If the source frame size is not 852x480, the video will be scaled 
@@ -67,7 +71,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// ratio of the source.
         /// </para>
         /// </summary>
-        public const string VC1BroadbandSd16X9 = "VC1 Broadband SD 16x9";
+        public const string VC1BroadbandSD16x9 = "VC1 Broadband SD 16x9";
 
         /// <summary>
         /// Produces a single Windows Media file with:
@@ -79,7 +83,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// the width of the profile target of 640 pixels, and its height will be scaled to match the aspect ratio of the source.
         /// </para>
         /// </summary>
-        public const string VC1BroadbandSd4X3 = "VC1 Broadband SD 4x3";
+        public const string VC1BroadbandSD4x3 = "VC1 Broadband SD 4x3";
 
         /// <summary>
         /// Produces a Smooth Streaming asset with:
@@ -91,7 +95,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// will increase/decrease correspondingly. Videos at lower bitrates will be down-scaled respectively.
         /// </para>
         /// </summary>
-        public const string VC1SmoothStreaming1080P = "VC1 Smooth Streaming 1080p";
+        public const string VC1SmoothStreaming1080p = "VC1 Smooth Streaming 1080p";
 
         /// <summary>
         /// Produces a Smooth Streaming asset with:
@@ -103,7 +107,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// will increase/decrease correspondingly. Videos at lower bitrates will be down-scaled respectively.
         /// </para>
         /// </summary>
-        public const string VC1SmoothStreaming720P = "VC1 Smooth Streaming 720p";
+        public const string VC1SmoothStreaming720p = "VC1 Smooth Streaming 720p";
 
         /// <summary>
         /// Produces a Smooth Streaming asset with:
@@ -115,7 +119,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// increase/decrease correspondingly. Videos at lower bitrates will be down-scaled respectively.
         /// </para>
         /// </summary>
-        public const string VC1SmoothStreamingSd16X9 = "VC1 Smooth Streaming SD 16x9";
+        public const string VC1SmoothStreamingSD16x9 = "VC1 Smooth Streaming SD 16x9";
 
         /// <summary>
         /// Produces a Smooth Streaming asset with:
@@ -127,18 +131,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// increase/decrease correspondingly. Videos at lower bitrates will be down-scaled respectively.
         /// </para>
         /// </summary>
-        public const string VC1SmoothStreamingSd4X3 = "VC1 Smooth Streaming SD 4x3";
+        public const string VC1SmoothStreamingSD4x3 = "VC1 Smooth Streaming SD 4x3";
 
         /// <summary>
         /// Produces a Smooth Streaming asset with:
-        ///     <para> - 4.1 kHz 16 bits/sample stereo audio CBR encoded at 128 kbps using WMA Pro</para>
+        ///     <para> - 44.1 kHz 16 bits/sample stereo audio CBR encoded at 128 kbps using WMA Pro</para>
         ///     <para> - 1080p video VBR encoded at 10 bitrates ranging from 9000 kbps to 350 kbps using VC-1 Advanced Profile, and two second GOPs</para>
         /// <para>
-        /// Use this preset name to produce an asset from 1080p (16:9 aspect ratio) content for delivery via IIS Smooth Streaming to Xbox Live Applications. If the source frame size is not 1920x1080, will stretch the video at the highest bitrate horizontally 
-        /// to 1920 pixels, and the height will increase/decrease correspondingly. Videos at lower bitrates will be down-scaled respectively.
+        /// Use this preset name to produce an asset from 1080p (16:9 aspect ratio) content for delivery via IIS Smooth Streaming to Xbox Live Applications.
+        /// If the source frame size is not 1920x1080, will stretch the video at the highest bitrate horizontally to 1920 pixels, and the height will
+        /// increase/decrease correspondingly. Videos at lower bitrates will be down-scaled respectively.
         /// </para>
         /// </summary>
-        public const string VC1SmoothStreaming1080PXboxLiveAdk = "VC1 Smooth Streaming 1080p Xbox Live ADK";
+        public const string VC1SmoothStreaming1080pXboxLiveADK = "VC1 Smooth Streaming 1080p Xbox Live ADK";
 
         /// <summary>
         /// Produces a Smooth Streaming asset with:
@@ -155,7 +160,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         #endregion
 
         #region H.264 Coding Standard
-        
+
         /// <summary>
         /// Produces a single MP4 file with:
         ///     <para> - 44.1 kHz 16 bits/sample stereo audio CBR encoded at 128 kbps using AAC</para>
@@ -166,7 +171,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// of the profile target of 1920 pixels, and its height will be scaled to match the aspect ratio of the source.
         /// </para>
         /// <para>
-        /// This encoding is set to H.264 High Profile. Some devices with displays that do not support 1080p will not be able to decode H.264 High Profile content.
+        /// Note: This encoding is set to H.264 High Profile. Some devices with displays that do not support 1080p will not be able to decode H.264 High Profile content.
         /// </para>
         /// </summary>
         public const string H264Broadband1080p = "H264 Broadband 1080p";
@@ -243,7 +248,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// lowest bitrate encodes should help when streaming over 3G or 4G connections to mobile devices
         /// </para>
         /// </summary>
-        public const string H264SmoothStreaming720pfor3Gor4G = "H264 Smooth Streaming 720p for 3G or 4G";
+        public const string H264SmoothStreaming720pFor3Gor4G = "H264 Smooth Streaming 720p for 3G or 4G";
 
         /// <summary>
         /// Produces a Smooth Streaming asset with:
@@ -279,7 +284,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Videos at lower bitrates will be down-scaled to one of 75%, 50% or 25% of the highest bitrate video.
         /// </para>
         /// <para>
-        /// This encoding is set to H.264 High Profile. Some devices with displays that do not support 1080p will not be able to decode H.264 High Profile content.
+        /// Note: This encoding is set to H.264 High Profile. Some devices with displays that do not support 1080p will not be able to decode H.264 High Profile content.
         /// </para>
         /// </summary>
         public const string H264AdaptiveBitrateMP4Set1080p = "H264 Adaptive Bitrate MP4 Set 1080p";
@@ -333,7 +338,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Audio is encoded at a low bitrate of 56 kbps, in order to satisfy App Store requirements for HLS. For more information, see <a href="https://developer.apple.com/library/ios/#qa/qa1767/_index.html">Resolving App Store Approval Issues for HTTP Live Streaming</a>.
         /// </para>
         /// </summary>
-        public const string H264AdaptiveBitrateMP4Set1080pforiOSCellularOnly = "H264 Adaptive Bitrate MP4 Set 1080p for iOS Cellular Only";
+        public const string H264AdaptiveBitrateMP4Set1080pForiOSCellularOnly = "H264 Adaptive Bitrate MP4 Set 1080p for iOS Cellular Only";
 
         /// <summary>
         /// Produces an asset with multiple GOP-aligned MP4 files:
@@ -348,7 +353,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Audio is encoded at a low bitrate of 56 kbps, in order to satisfy App Store requirements for HLS. For more information, see <a href="https://developer.apple.com/library/ios/#qa/qa1767/_index.html">Resolving App Store Approval Issues for HTTP Live Streaming</a>.
         /// </para>
         /// </summary>
-        public const string H264AdaptiveBitrateMP4Set720pforiOSCellularOnly = "H264 Adaptive Bitrate MP4 Set 720p for iOS Cellular Only";
+        public const string H264AdaptiveBitrateMP4Set720pForiOSCellularOnly = "H264 Adaptive Bitrate MP4 Set 720p for iOS Cellular Only";
 
         /// <summary>
         /// Produces an asset with multiple GOP-aligned MP4 files:
@@ -363,7 +368,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Audio is encoded at a low bitrate of 56 kbps, in order to satisfy App Store requirements for HLS. For more information, see <a href="https://developer.apple.com/library/ios/#qa/qa1767/_index.html">Resolving App Store Approval Issues for HTTP Live Streaming</a>.
         /// </para>
         /// </summary>
-        public const string H264AdaptiveBitrateMP4SetSD16x9foriOSCellularOnly = "H264 Adaptive Bitrate MP4 Set SD 16x9 for iOS Cellular Only";
+        public const string H264AdaptiveBitrateMP4SetSD16x9ForiOSCellularOnly = "H264 Adaptive Bitrate MP4 Set SD 16x9 for iOS Cellular Only";
 
         /// <summary>
         /// Produces an asset with multiple GOP-aligned MP4 files:
@@ -378,7 +383,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Audio is encoded at a low bitrate of 56 kbps, in order to satisfy App Store requirements for HLS. For more information, see <a href="https://developer.apple.com/library/ios/#qa/qa1767/_index.html">Resolving App Store Approval Issues for HTTP Live Streaming</a>.
         /// </para>
         /// </summary>
-        public const string H264AdaptiveBitrateMP4SetSD4x3foriOSCellularOnly = "H264 Adaptive Bitrate MP4 Set SD 4x3 for iOS Cellular Only";
+        public const string H264AdaptiveBitrateMP4SetSD4x3ForiOSCellularOnly = "H264 Adaptive Bitrate MP4 Set SD 4x3 for iOS Cellular Only";
 
         /// <summary>
         /// Produces a Smooth Streaming asset with:
@@ -402,13 +407,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// will increase/decrease correspondingly.
         /// </para>
         /// <para>
-        /// Note: Windows Phone 7 doesn’t support frame rates greater than 30fps. Also the Windows Azure Media Services encoder doesn’t do frame rate conversion. 
+        /// Note: Windows Phone 7 doesn't support frame rates greater than 30fps. Also the Windows Azure Media Services encoder doesn’t do frame rate conversion. 
         /// So if the source content has a frame rate faster than 30fps, then the job output asset would as well. So it wouldn’t be supported on 
         /// Windows Phone 7 devices.
         /// </para>
         /// </summary>
         public const string H264SmoothStreamingWindowsPhone7Series = "H264 Smooth Streaming Windows Phone 7 Series";
-        
+
         #endregion
     }
 }
