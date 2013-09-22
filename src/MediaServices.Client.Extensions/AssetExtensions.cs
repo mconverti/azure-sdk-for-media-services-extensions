@@ -238,7 +238,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     context.CreateAssetFileFromLocalFileAsync(asset, filePath, sasLocator, uploadProgressChangedHandler, cancellationToken));
             }
 
-            await Task.WhenAll(uploadTasks);
+            await Task.Factory.ContinueWhenAll(uploadTasks.ToArray(), t => t, TaskContinuationOptions.ExecuteSynchronously);
 
             await sasLocator.DeleteAsync();
 
@@ -441,7 +441,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     assetFile.DownloadAsync(Path.GetFullPath(localDownloadPath), blobTransferClient, sasLocator, cancellationToken));
             }
 
-            await Task.WhenAll(downloadTasks);
+            await Task.Factory.ContinueWhenAll(downloadTasks.ToArray(), t => t, TaskContinuationOptions.ExecuteSynchronously);
 
             await sasLocator.DeleteAsync();
 

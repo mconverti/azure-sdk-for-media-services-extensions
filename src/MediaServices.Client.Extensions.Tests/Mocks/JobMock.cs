@@ -92,5 +92,15 @@ namespace MediaServices.Client.Extensions.Tests.Mocks
         {
             throw new NotImplementedException();
         }
+
+        public void Update()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
