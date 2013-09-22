@@ -12,7 +12,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
     /// Contains string constants with the available Task Preset Strings for Windows Azure Media Encoder.
-    /// For more information, please visit http://msdn.microsoft.com/library/windowsazure/jj129582.aspx.
+    /// For more information, please visit <a href="http://msdn.microsoft.com/library/windowsazure/jj129582.aspx">http://msdn.microsoft.com/library/windowsazure/jj129582.aspx</a>.
     /// </summary>
     public static class MediaEncoderTaskPresetStrings
     {
@@ -20,13 +20,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         /// <summary>
         /// Produces a Windows Media file 44.1 kHz 16 bits/sample stereo audio encoded using WMA.
-        /// <para>Use this preset name to produce an audio-only file for music services. The output file extension is *.wma.</para>
+        /// <para>Use this preset name to produce an audio-only file for music services. The output file extension is *.WMA.</para>
         /// </summary>
         public const string WMAHighQualityAudio = "WMA High Quality Audio";
 
         /// <summary>
         /// Produces an MP4 file containing 44.1 kHz 16 bits/sample stereo audio CBR encoded at 192 kbps using AAC.
-        /// <para>Use this preset name to produce an audio-only file for music services. The output file extension is *.mp4.</para>
+        /// <para>Use this preset name to produce an audio-only file for music services. The output file extension is *.MP4.</para>
         /// </summary>
         public const string AACGoodQualityAudio = "AAC Good Quality Audio";
 
@@ -40,7 +40,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         ///    <para> - 1080p video VBR encoded at 6750 kbps using VC-1 Advanced Profile</para>
         /// <para>
         /// Use this preset name to produce a downloadable file for 1080p (16:9 aspect ratio) content for delivery 
-        /// over broadband connections. The output file extension is *.wmv. If the source frame size is not 1920x1080, 
+        /// over broadband connections. The output file extension is *.WMV. If the source frame size is not 1920x1080, 
         /// the video will be scaled horizontally to the width of the profile target (e.g. 1920, 1280, 852 or 640 pixels), 
         /// and its height will be scaled to match the aspect ratio of the source.
         /// </para>
@@ -53,7 +53,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         ///     <para> - 720p video VBR encoded at 4500 kbps using VC-1 Advanced Profile</para>
         /// <para>
         /// Use this preset name to produce a downloadable file for 720p (16:9 aspect ratio) content for delivery over 
-        /// broadband connections. The output file extension is *.wmv. If the source frame size is not 1280x720, the video 
+        /// broadband connections. The output file extension is *.WMV. If the source frame size is not 1280x720, the video 
         /// will be scaled horizontally to the width of the profile target of 1280 pixels, and its height will be scaled 
         /// to match the aspect ratio of the source.
         /// </para>
@@ -66,7 +66,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         ///     <para> - SD video VBR encoded at 2200 kbps using VC-1 Advanced Profile</para>
         /// <para>
         /// Use this preset name to produce a downloadable file for SD (16:9 aspect ratio) content for delivery over broadband 
-        /// connections. The output file extension is *.wmv. If the source frame size is not 852x480, the video will be scaled 
+        /// connections. The output file extension is *.WMV. If the source frame size is not 852x480, the video will be scaled 
         /// horizontally to the width of the profile target of 852 pixels, and its height will be scaled to match the aspect 
         /// ratio of the source.
         /// </para>
@@ -79,7 +79,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         ///     <para> - SD video VBR encoded at 1800 kbps using VC-1 Advanced Profile</para>
         /// <para>
         /// Use this preset name to produce a downloadable file for SD (4:3 aspect ratio) content for delivery over broadband connections. 
-        /// The output file extension is *.wmv. If the source frame size is not 640x480, the video will be scaled horizontally to 
+        /// The output file extension is *.WMV. If the source frame size is not 640x480, the video will be scaled horizontally to 
         /// the width of the profile target of 640 pixels, and its height will be scaled to match the aspect ratio of the source.
         /// </para>
         /// </summary>
@@ -167,7 +167,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         ///     <para> - 1080p video CBR encoded at 6750 kbps using H.264 High Profile</para>
         /// <para>
         /// Use this preset name to produce a downloadable file for 1080p (16:9 aspect ratio) content for delivery over broadband connections. 
-        /// The output file extension is *.mp4. If the source frame size is not 1920x1080, the video will be scaled horizontally to the width 
+        /// The output file extension is *.MP4. If the source frame size is not 1920x1080, the video will be scaled horizontally to the width 
         /// of the profile target of 1920 pixels, and its height will be scaled to match the aspect ratio of the source.
         /// </para>
         /// <para>
@@ -182,7 +182,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         ///     <para> - 720p video CBR encoded at 4500 kbps using H.264 Main Profile</para>
         /// <para>    
         /// Use this preset name to produce a downloadable file for 720p (16:9 aspect ratio) content for delivery over broadband connections. The output file 
-        /// extension is *. mp4. If the source frame size is not 1280x720, the video will be scaled horizontally to the width of the profile target of 1280 pixels, 
+        /// extension is *.MP4. If the source frame size is not 1280x720, the video will be scaled horizontally to the width of the profile target of 1280 pixels, 
         /// and its height will be scaled to match the aspect ratio of the source.
         /// </para>
         /// </summary>
@@ -194,7 +194,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         ///     <para> - SD video VBR encoded at 2200 kbps using H.264 Main Profile</para>
         /// <para>
         /// Use this preset name to produce a downloadable file for SD (16:9 aspect ratio) content for delivery over broadband connections. The output file 
-        /// extension is *. mp4. If the source frame size is not 852x480, the video will be scaled horizontally to the width of the profile target of 852 pixels, 
+        /// extension is *.MP4. If the source frame size is not 852x480, the video will be scaled horizontally to the width of the profile target of 852 pixels, 
         /// and its height will be scaled to match the aspect ratio of the source.
         /// </para>
         /// </summary>
@@ -206,7 +206,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         ///     <para> - SD video VBR encoded at 1800 kbps using H.264 Main Profile</para>
         /// <para>    
         /// Use this preset name to produce a downloadable file for SD (4:3 aspect ratio) content for delivery over broadband connections. The output file 
-        /// extension is *. mp4. If the source frame size is not 640x480, the video will be scaled horizontally to the width of the profile target of 640 pixels, 
+        /// extension is *.MP4. If the source frame size is not 640x480, the video will be scaled horizontally to the width of the profile target of 640 pixels, 
         /// and its height will be scaled to match the aspect ratio of the source.
         /// </para>
         /// </summary>

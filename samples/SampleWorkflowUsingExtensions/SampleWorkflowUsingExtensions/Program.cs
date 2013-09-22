@@ -14,6 +14,7 @@ namespace SampleWorkflowUsingExtensions
     using System.Collections.Generic;
     using System.Configuration;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Threading;
     using Microsoft.WindowsAzure.MediaServices.Client;
@@ -85,12 +86,7 @@ namespace SampleWorkflowUsingExtensions
                 Uri mpegDashUri = outputAsset.GetMpegDashUri();
                 List<Uri> mp4ProgressiveDownloadUris = mp4AssetFiles.Select(af => af.GetSasUri()).ToList();
 
-                Console.WriteLine(smoothStreamingUri);
-                Console.WriteLine(hlsUri);
-                Console.WriteLine(mpegDashUri);
-                mp4ProgressiveDownloadUris.ForEach(uri => Console.WriteLine(uri));
-
-                string filePath = @"asset-urls.txt";
+                string filePath = "asset-urls.txt";
 
                 // 6. Save the URLs to a local file.
                 smoothStreamingUri.Save(filePath);
@@ -99,6 +95,26 @@ namespace SampleWorkflowUsingExtensions
                 mp4ProgressiveDownloadUris.ForEach(uri => uri.Save(filePath));
 
                 Console.WriteLine("Output asset available for adaptive streaming and progressive download.");
+                Console.WriteLine("The URLs can be found at '{0}'.", Path.GetFullPath(filePath));
+
+                string outputFolder = "job-output";
+                if (!Directory.Exists(outputFolder))
+                {
+                    Directory.CreateDirectory(outputFolder);
+                }
+
+                Console.WriteLine("Downloading output asset files to local folder...");
+
+                // 7. Download the output asset to a local folder.
+                context.DownloadAssetFilesToFolder(
+                    outputAsset,
+                    outputFolder,
+                    (af, p) =>
+                    {
+                        Console.WriteLine("Downloading '{0}' - Progress: {1:0.##}%", af.Name, p.Progress);
+                    });
+
+                Console.WriteLine("Output asset files available at '{0}'.", Path.GetFullPath(outputFolder));
 
                 Console.WriteLine("VOD workflow finished.");
             }
@@ -108,7 +124,7 @@ namespace SampleWorkflowUsingExtensions
                 // exception with its content.
                 exception = MediaServicesExceptionParser.Parse(exception);
 
-                Trace.TraceError(exception.Message);
+                Console.Error.WriteLine(exception.Message);
             }
             finally
             {

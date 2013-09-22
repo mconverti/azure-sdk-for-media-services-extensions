@@ -21,8 +21,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public const string WindowsAzureMediaEncoder = "Windows Azure Media Encoder";
 
         /// <summary>
-        /// Lets you convert media assets from .mp4 to smooth streaming format. Also, lets you convert media assets 
-        /// from smooth streaming to the Apple HTTP Live Streaming (HLS) format.
+        /// Lets you convert media assets from MP4 to Smooth Streaming format. Also, lets you convert media assets 
+        /// from Smooth Streaming to the Apple HTTP Live Streaming (HLS) format.
         /// </summary>
         public const string WindowsAzureMediaPackager = "Windows Azure Media Packager";
 
