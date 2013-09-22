@@ -57,7 +57,7 @@ namespace MediaServices.Client.Extensions.Tests
             Assert.AreEqual(1, assetFiles.Count());
             Assert.AreEqual("smallwmv1.wmv", assetFiles.ElementAt(0).Name);
 
-            Assert.AreEqual(0, this.asset.Locators.Count());
+            Assert.AreEqual(0, this.context.Locators.Where(l => l.AssetId == this.asset.Id).Count());
         }
 
         [TestMethod]
@@ -92,7 +92,7 @@ namespace MediaServices.Client.Extensions.Tests
             Assert.AreEqual(1, assetFiles.Count());
             Assert.AreEqual("smallwmv1.wmv", assetFiles.ElementAt(0).Name);
 
-            Assert.AreEqual(0, this.asset.Locators.Count());
+            Assert.AreEqual(0, this.context.Locators.Where(l => l.AssetId == this.asset.Id).Count());
         }
 
         [TestMethod]
@@ -153,7 +153,7 @@ namespace MediaServices.Client.Extensions.Tests
             Assert.AreEqual("smallwmv2.wmv", assetFiles.ElementAt(2).Name);
             Assert.IsFalse(assetFiles.ElementAt(2).IsPrimary);
 
-            Assert.AreEqual(0, this.asset.Locators.Count());
+            Assert.AreEqual(0, this.context.Locators.Where(l => l.AssetId == this.asset.Id).Count());
         }
 
         [TestMethod]
@@ -197,7 +197,7 @@ namespace MediaServices.Client.Extensions.Tests
             Assert.AreEqual("smallwmv2.wmv", assetFiles.ElementAt(2).Name);
             Assert.IsFalse(assetFiles.ElementAt(2).IsPrimary);
 
-            Assert.AreEqual(0, this.asset.Locators.Count());
+            Assert.AreEqual(0, this.context.Locators.Where(l => l.AssetId == this.asset.Id).Count());
         }
 
         [TestMethod]
@@ -354,7 +354,7 @@ namespace MediaServices.Client.Extensions.Tests
             AssertDownloadedFile(originalFolderPath, downloadFolderPath, "smallwmv2.wmv");
             AssertDownloadedFile(originalFolderPath, downloadFolderPath, "dummy.ism");
 
-            Assert.AreEqual(0, this.asset.Locators.Count());
+            Assert.AreEqual(0, this.context.Locators.Where(l => l.AssetId == this.asset.Id).Count());
         }
 
         [TestMethod]
@@ -395,7 +395,7 @@ namespace MediaServices.Client.Extensions.Tests
             AssertDownloadedFile(originalFolderPath, downloadFolderPath, "smallwmv2.wmv", downloadResults["smallwmv2.wmv"]);
             AssertDownloadedFile(originalFolderPath, downloadFolderPath, "dummy.ism", downloadResults["dummy.ism"]);
 
-            Assert.AreEqual(0, this.asset.Locators.Count());
+            Assert.AreEqual(0, this.context.Locators.Where(l => l.AssetId == this.asset.Id).Count());
         }
 
         [TestMethod]
