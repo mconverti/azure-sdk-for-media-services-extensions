@@ -1,5 +1,5 @@
-Extensions for Windows Azure Media Services .NET SDK
-====================================================
+Windows Azure Media Services .NET SDK Extensions
+================================================
 
 ## What is it?
 A NuGet package that contains a set of extension methods and helpers for the Windows Azure Media Services SDK for .NET.
