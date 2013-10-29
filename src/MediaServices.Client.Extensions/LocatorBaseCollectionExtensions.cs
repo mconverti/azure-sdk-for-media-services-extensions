@@ -1,4 +1,4 @@
-﻿// <copyright file="LocatorExtensions.cs" company="open-source">
+﻿// <copyright file="LocatorBaseCollectionExtensions.cs" company="open-source">
 //  No rights reserved. Copyright (c) 2013 by mconverti
 //   
 //  Redistribution and use in source and binary forms, with or without modification, are permitted.
@@ -14,25 +14,25 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Contains extension methods and helpers related to the <see cref="ILocator"/> interface.
+    /// Contains extension methods and helpers for <see cref="LocatorBaseCollection"/> class.
     /// </summary>
-    public static class LocatorExtensions
+    public static class LocatorBaseCollectionExtensions
     {
         /// <summary>
         /// Returns a <see cref="System.Threading.Tasks.Task&lt;ILocator&gt;"/> instance for new <see cref="ILocator"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
-        /// <param name="asset">The <see cref="IAsset"/> instance for the new <see cref="ILocator"/>.</param>
+        /// <param name="locators">The <see cref="LocatorBaseCollection"/> instance.</param>
         /// <param name="locatorType">The <see cref="LocatorType"/>.</param>
+        /// <param name="asset">The <see cref="IAsset"/> instance for the new <see cref="ILocator"/>.</param>
         /// <param name="permissions">The <see cref="AccessPermissions"/> of the <see cref="IAccessPolicy"/> associated with the new <see cref="ILocator"/>.</param>
         /// <param name="duration">The duration of the <see cref="IAccessPolicy"/> associated with the new <see cref="ILocator"/>.</param>
         /// <param name="startTime">The start time of the new <see cref="ILocator"/>.</param>
         /// <returns>A <see cref="System.Threading.Tasks.Task&lt;ILocator&gt;"/> instance for new <see cref="ILocator"/>.</returns>
-        public static async Task<ILocator> CreateLocatorAsync(this CloudMediaContext context, IAsset asset, LocatorType locatorType, AccessPermissions permissions, TimeSpan duration, DateTime? startTime)
+        public static async Task<ILocator> CreateAsync(this LocatorBaseCollection locators, LocatorType locatorType, IAsset asset, AccessPermissions permissions, TimeSpan duration, DateTime? startTime)
         {
-            if (context == null)
+            if (locators == null)
             {
-                throw new ArgumentNullException("context", "The context cannot be null.");
+                throw new ArgumentNullException("locators", "The locators collection cannot be null.");
             }
 
             if (asset == null)
@@ -40,38 +40,40 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentNullException("asset", "The asset cannot be null.");
             }
 
+            MediaContextBase context = locators.MediaContext;
+
             var policy = await context.AccessPolicies.CreateAsync(asset.Name, duration, permissions);
 
-            return await context.Locators.CreateLocatorAsync(locatorType, asset, policy, startTime);
+            return await locators.CreateLocatorAsync(locatorType, asset, policy, startTime);
         }
 
         /// <summary>
         /// Returns a <see cref="System.Threading.Tasks.Task&lt;ILocator&gt;"/> instance for new <see cref="ILocator"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
-        /// <param name="asset">The <see cref="IAsset"/> instance for the new <see cref="ILocator"/>.</param>
+        /// <param name="locators">The <see cref="LocatorBaseCollection"/> instance.</param>
         /// <param name="locatorType">The <see cref="LocatorType"/>.</param>
+        /// <param name="asset">The <see cref="IAsset"/> instance for the new <see cref="ILocator"/>.</param>
         /// <param name="permissions">The <see cref="AccessPermissions"/> of the <see cref="IAccessPolicy"/> associated with the new <see cref="ILocator"/>.</param>
         /// <param name="duration">The duration of the <see cref="IAccessPolicy"/> associated with the new <see cref="ILocator"/>.</param>
         /// <returns>A <see cref="System.Threading.Tasks.Task&lt;ILocator&gt;"/> instance for new <see cref="ILocator"/>.</returns>
-        public static Task<ILocator> CreateLocatorAsync(this CloudMediaContext context, IAsset asset, LocatorType locatorType, AccessPermissions permissions, TimeSpan duration)
+        public static Task<ILocator> CreateAsync(this LocatorBaseCollection locators, LocatorType locatorType, IAsset asset, AccessPermissions permissions, TimeSpan duration)
         {
-            return context.CreateLocatorAsync(asset, locatorType, permissions, duration, null);
+            return locators.CreateAsync(locatorType, asset, permissions, duration, null);
         }
 
         /// <summary>
         /// Returns a new <see cref="ILocator"/> instance.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
-        /// <param name="asset">The <see cref="IAsset"/> instance for the new <see cref="ILocator"/>.</param>
+        /// <param name="locators">The <see cref="LocatorBaseCollection"/> instance.</param>
         /// <param name="locatorType">The <see cref="LocatorType"/>.</param>
+        /// <param name="asset">The <see cref="IAsset"/> instance for the new <see cref="ILocator"/>.</param>
         /// <param name="permissions">The <see cref="AccessPermissions"/> of the <see cref="IAccessPolicy"/> associated with the new <see cref="ILocator"/>.</param>
         /// <param name="duration">The duration of the <see cref="IAccessPolicy"/> associated with the new <see cref="ILocator"/>.</param>
         /// <param name="startTime">The start time of the new <see cref="ILocator"/>.</param>
         /// <returns>A a new <see cref="ILocator"/> instance.</returns>
-        public static ILocator CreateLocator(this CloudMediaContext context, IAsset asset, LocatorType locatorType, AccessPermissions permissions, TimeSpan duration, DateTime? startTime)
+        public static ILocator Create(this LocatorBaseCollection locators, LocatorType locatorType, IAsset asset, AccessPermissions permissions, TimeSpan duration, DateTime? startTime)
         {
-            using (Task<ILocator> task = context.CreateLocatorAsync(asset, locatorType, permissions, duration, startTime))
+            using (Task<ILocator> task = locators.CreateAsync(locatorType, asset, permissions, duration, startTime))
             {
                 return task.Result;
             }
@@ -80,15 +82,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Returns a new <see cref="ILocator"/> instance.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
-        /// <param name="asset">The <see cref="IAsset"/> instance for the new <see cref="ILocator"/>.</param>
+        /// <param name="locators">The <see cref="LocatorBaseCollection"/> instance.</param>
         /// <param name="locatorType">The <see cref="LocatorType"/>.</param>
+        /// <param name="asset">The <see cref="IAsset"/> instance for the new <see cref="ILocator"/>.</param>
         /// <param name="permissions">The <see cref="AccessPermissions"/> of the <see cref="IAccessPolicy"/> associated with the new <see cref="ILocator"/>.</param>
         /// <param name="duration">The duration of the <see cref="IAccessPolicy"/> associated with the new <see cref="ILocator"/>.</param>
         /// <returns>A a new <see cref="ILocator"/> instance.</returns>
-        public static ILocator CreateLocator(this CloudMediaContext context, IAsset asset, LocatorType locatorType, AccessPermissions permissions, TimeSpan duration)
+        public static ILocator Create(this LocatorBaseCollection locators, LocatorType locatorType, IAsset asset, AccessPermissions permissions, TimeSpan duration)
         {
-            return context.CreateLocator(asset, locatorType, permissions, duration, null);
+            return locators.Create(locatorType, asset, permissions, duration, null);
         }
     }
 }

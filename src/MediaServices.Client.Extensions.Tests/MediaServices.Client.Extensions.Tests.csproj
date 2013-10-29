@@ -93,7 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssetExtensionsFixture.cs" />
-    <Compile Include="LocatorExtensionsFixture.cs" />
+    <Compile Include="LocatorBaseCollectionExtensionsFixture.cs" />
     <Compile Include="MediaServicesExceptionParserFixture.cs" />
     <Compile Include="JobExtensionsFixture.cs" />
     <Compile Include="Mocks\JobMock.cs" />

@@ -68,7 +68,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             IAsset asset = await context.Assets.CreateAsync(assetName, storageAccountName, options, cancellationToken);
 
-            ILocator sasLocator = await context.CreateLocatorAsync(asset, LocatorType.Sas, AccessPermissions.Write | AccessPermissions.List, DefaultAccessPolicyDuration);
+            ILocator sasLocator = await context.Locators.CreateAsync(LocatorType.Sas, asset, AccessPermissions.Write | AccessPermissions.List, DefaultAccessPolicyDuration);
 
             EventHandler<UploadProgressChangedEventArgs> uploadProgressChangedHandler =
                 (s, e) =>
@@ -217,7 +217,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             string assetName = Path.GetFileName(Path.GetFullPath(folderPath.TrimEnd('\\')));
             IAsset asset = await context.Assets.CreateAsync(assetName, storageAccountName, options, cancellationToken);
 
-            ILocator sasLocator = await context.CreateLocatorAsync(asset, LocatorType.Sas, AccessPermissions.Write | AccessPermissions.List, DefaultAccessPolicyDuration);
+            ILocator sasLocator = await context.Locators.CreateAsync(LocatorType.Sas, asset, AccessPermissions.Write | AccessPermissions.List, DefaultAccessPolicyDuration);
 
             EventHandler<UploadProgressChangedEventArgs> uploadProgressChangedHandler =
                 (s, e) =>
@@ -364,7 +364,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 UriKind.Relative);
 
             await context
-                .DataContextFactory
+                .MediaServicesClassFactory
                 .CreateDataServiceContext()
                 .ExecuteAsync(uriCreateFileInfos, null, "GET");
         }
@@ -410,7 +410,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     "folderPath");
             }
 
-            ILocator sasLocator = await context.CreateLocatorAsync(asset, LocatorType.Sas, AccessPermissions.Read, DefaultAccessPolicyDuration);
+            ILocator sasLocator = await context.Locators.CreateAsync(LocatorType.Sas, asset, AccessPermissions.Read, DefaultAccessPolicyDuration);
 
             EventHandler<DownloadProgressChangedEventArgs> downloadProgressChangedHandler =
                 (s, e) =>

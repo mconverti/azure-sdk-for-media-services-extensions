@@ -239,7 +239,7 @@ namespace MediaServices.Client.Extensions.Tests
             this.asset = this.context.Assets.Create(Path.GetFileNameWithoutExtension(fileName), AssetCreationOptions.None);
 
             // Create a SAS locator for the empty asset with write access.
-            var sasLocator = this.context.CreateLocator(this.asset, LocatorType.Sas, AccessPermissions.Write, TimeSpan.FromDays(1));
+            var sasLocator = this.context.Locators.Create(LocatorType.Sas, this.asset, AccessPermissions.Write, TimeSpan.FromDays(1));
 
             // Get a refence to the asset container in Blob storage.
             var locatorUri = new Uri(sasLocator.Path, UriKind.Absolute);
@@ -439,7 +439,7 @@ namespace MediaServices.Client.Extensions.Tests
         {
             this.asset = this.context.CreateAssetFromFile("dummy.ism", AssetCreationOptions.None);
 
-            var locator = this.context.CreateLocator(this.asset, LocatorType.OnDemandOrigin, AccessPermissions.Read, TimeSpan.FromDays(1));
+            var locator = this.context.Locators.Create(LocatorType.OnDemandOrigin, this.asset, AccessPermissions.Read, TimeSpan.FromDays(1));
 
             var smoothStreamingUrl = this.asset.GetSmoothStreamingUri();
 
@@ -456,7 +456,7 @@ namespace MediaServices.Client.Extensions.Tests
         {
             this.asset = this.context.CreateAssetFromFile("dummy.ism", AssetCreationOptions.None);
 
-            var locator = this.context.CreateLocator(this.asset, LocatorType.OnDemandOrigin, AccessPermissions.Read, TimeSpan.FromDays(1));
+            var locator = this.context.Locators.Create(LocatorType.OnDemandOrigin, this.asset, AccessPermissions.Read, TimeSpan.FromDays(1));
 
             var hlsUri = this.asset.GetHlsUri();
 
@@ -473,7 +473,7 @@ namespace MediaServices.Client.Extensions.Tests
         {
             this.asset = this.context.CreateAssetFromFile("dummy.ism", AssetCreationOptions.None);
 
-            var locator = this.context.CreateLocator(this.asset, LocatorType.OnDemandOrigin, AccessPermissions.Read, TimeSpan.FromDays(1));
+            var locator = this.context.Locators.Create(LocatorType.OnDemandOrigin, this.asset, AccessPermissions.Read, TimeSpan.FromDays(1));
 
             var mpegDashUri = this.asset.GetMpegDashUri();
 
@@ -499,7 +499,7 @@ namespace MediaServices.Client.Extensions.Tests
         {
             this.asset = this.context.CreateAssetFromFile("smallwmv1.wmv", AssetCreationOptions.None);
 
-            var locator = this.context.CreateLocator(this.asset, LocatorType.Sas, AccessPermissions.Read, TimeSpan.FromDays(1));
+            var locator = this.context.Locators.Create(LocatorType.Sas, this.asset, AccessPermissions.Read, TimeSpan.FromDays(1));
 
             var assetFiles = this.asset.AssetFiles.First();
 

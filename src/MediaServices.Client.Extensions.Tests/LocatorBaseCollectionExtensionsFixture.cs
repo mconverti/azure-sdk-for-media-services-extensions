@@ -17,20 +17,20 @@ namespace MediaServices.Client.Extensions.Tests
     using Microsoft.WindowsAzure.MediaServices.Client;
 
     [TestClass]
-    public class LocatorExtensionsFixture
+    public class LocatorBaseCollectionExtensionsFixture
     {
         private CloudMediaContext context;
         private IAsset asset;
 
         [TestMethod]
-        public void ShouldThrowCreateAccessPolicyAndLocatorIfContextIsNull()
+        public void ShouldThrowCreateAccessPolicyAndLocatorIfLocatorCollectionIsNull()
         {
-            CloudMediaContext nullContext = null;
+            LocatorBaseCollection nullLocators = null;
             this.asset = this.context.Assets.Create("empty", AssetCreationOptions.None);
 
             try
             {
-                nullContext.CreateLocator(this.asset, LocatorType.OnDemandOrigin, AccessPermissions.Read, TimeSpan.FromDays(1));
+                nullLocators.Create(LocatorType.OnDemandOrigin, this.asset, AccessPermissions.Read, TimeSpan.FromDays(1));
             }
             catch (AggregateException exception)
             {
@@ -45,7 +45,7 @@ namespace MediaServices.Client.Extensions.Tests
 
             try
             {
-                this.context.CreateLocator(nullAsset, LocatorType.OnDemandOrigin, AccessPermissions.Read, TimeSpan.FromDays(1));
+                this.context.Locators.Create(LocatorType.OnDemandOrigin, nullAsset, AccessPermissions.Read, TimeSpan.FromDays(1));
             }
             catch (AggregateException exception)
             {
@@ -62,7 +62,7 @@ namespace MediaServices.Client.Extensions.Tests
             var accessPolicyDuration = TimeSpan.FromDays(1);
             this.asset = this.context.Assets.Create("empty", AssetCreationOptions.None);
 
-            var locator = this.context.CreateLocator(this.asset, locatorType, accessPolicyPermissions, accessPolicyDuration, locatorStartTime);
+            var locator = this.context.Locators.Create(locatorType, this.asset, accessPolicyPermissions, accessPolicyDuration, locatorStartTime);
 
             Assert.IsNotNull(locator);
             Assert.AreEqual(locatorType, locator.Type);
@@ -84,7 +84,7 @@ namespace MediaServices.Client.Extensions.Tests
             var accessPolicyDuration = TimeSpan.FromDays(1);
             this.asset = this.context.Assets.Create("empty", AssetCreationOptions.None);
 
-            var locator = this.context.CreateLocator(this.asset, locatorType, accessPolicyPermissions, accessPolicyDuration, locatorStartTime);
+            var locator = this.context.Locators.Create(locatorType, this.asset, accessPolicyPermissions, accessPolicyDuration, locatorStartTime);
 
             Assert.IsNotNull(locator);
             Assert.AreEqual(locatorType, locator.Type);
