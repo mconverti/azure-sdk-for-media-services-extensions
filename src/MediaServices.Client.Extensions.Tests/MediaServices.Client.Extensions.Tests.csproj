@@ -92,7 +92,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssetExtensionsFixture.cs" />
+    <Compile Include="AssetBaseCollectionExtensionsFixture.cs" />
     <Compile Include="LocatorBaseCollectionExtensionsFixture.cs" />
     <Compile Include="MediaServicesExceptionParserFixture.cs" />
     <Compile Include="JobExtensionsFixture.cs" />

@@ -1,4 +1,4 @@
-﻿// <copyright file="AssetExtensionsFixture.cs" company="open-source">
+﻿// <copyright file="AssetBaseCollectionExtensionsFixture.cs" company="open-source">
 //  No rights reserved. Copyright (c) 2013 by mconverti
 //   
 //  Redistribution and use in source and binary forms, with or without modification, are permitted.
@@ -22,7 +22,7 @@ namespace MediaServices.Client.Extensions.Tests
     using Microsoft.WindowsAzure.Storage.Blob;
 
     [TestClass]
-    public class AssetExtensionsFixture
+    public class AssetBaseCollectionExtensionsFixture
     {
         private CloudMediaContext context;
         private IAsset asset;
@@ -30,11 +30,11 @@ namespace MediaServices.Client.Extensions.Tests
         [TestMethod]
         public void ShouldThrowCreateAssetFromFileIfContextIsNull()
         {
-            CloudMediaContext nullContext = null;
+            AssetBaseCollection nullAssets = null;
 
             try
             {
-                nullContext.CreateAssetFromFileAsync(string.Empty, AssetCreationOptions.None, CancellationToken.None).Wait();
+                nullAssets.CreateFromFileAsync(string.Empty, AssetCreationOptions.None, CancellationToken.None).Wait();
             }
             catch (AggregateException exception)
             {
@@ -47,7 +47,7 @@ namespace MediaServices.Client.Extensions.Tests
         public void ShouldCreateAssetFromFile()
         {
             var fileName = "smallwmv1.wmv";
-            this.asset = this.context.CreateAssetFromFile(fileName, null, AssetCreationOptions.None);
+            this.asset = this.context.Assets.CreateFromFile(fileName, null, AssetCreationOptions.None);
 
             Assert.IsNotNull(this.asset);
             Assert.AreEqual(fileName, this.asset.Name);
@@ -57,6 +57,7 @@ namespace MediaServices.Client.Extensions.Tests
             Assert.AreEqual(1, assetFiles.Count());
             Assert.AreEqual("smallwmv1.wmv", assetFiles.ElementAt(0).Name);
 
+            this.context = this.CreateContext();
             Assert.AreEqual(0, this.context.Locators.Where(l => l.AssetId == this.asset.Id).Count());
         }
 
@@ -78,7 +79,7 @@ namespace MediaServices.Client.Extensions.Tests
                 };
 
             var fileName = "smallwmv1.wmv";
-            this.asset = this.context.CreateAssetFromFile(fileName, AssetCreationOptions.None, uploadProgressChangedCallback);
+            this.asset = this.context.Assets.CreateFromFile(fileName, AssetCreationOptions.None, uploadProgressChangedCallback);
 
             Assert.IsNotNull(this.asset);
             Assert.AreEqual(fileName, this.asset.Name);
@@ -92,17 +93,18 @@ namespace MediaServices.Client.Extensions.Tests
             Assert.AreEqual(1, assetFiles.Count());
             Assert.AreEqual("smallwmv1.wmv", assetFiles.ElementAt(0).Name);
 
+            this.context = this.CreateContext();
             Assert.AreEqual(0, this.context.Locators.Where(l => l.AssetId == this.asset.Id).Count());
         }
 
         [TestMethod]
         public void ShouldThrowCreateAssetFromFolderIfContextIsNull()
         {
-            CloudMediaContext nullContext = null;
+            AssetBaseCollection nullAssets = null;
 
             try
             {
-                nullContext.CreateAssetFromFolderAsync(string.Empty, null, AssetCreationOptions.None, CancellationToken.None);
+                nullAssets.CreateFromFolderAsync(string.Empty, null, AssetCreationOptions.None, CancellationToken.None);
             }
             catch (AggregateException exception)
             {
@@ -123,7 +125,7 @@ namespace MediaServices.Client.Extensions.Tests
 
             try
             {
-                this.context.CreateAssetFromFolderAsync(emptyFolderName, AssetCreationOptions.None, CancellationToken.None);
+                this.context.Assets.CreateFromFolderAsync(emptyFolderName, AssetCreationOptions.None, CancellationToken.None);
             }
             catch (AggregateException exception)
             {
@@ -138,7 +140,7 @@ namespace MediaServices.Client.Extensions.Tests
         public void ShouldCreateAssetFromFolder()
         {
             var folderName = "Media";
-            this.asset = this.context.CreateAssetFromFolder(folderName, null, AssetCreationOptions.None);
+            this.asset = this.context.Assets.CreateFromFolder(folderName, null, AssetCreationOptions.None);
 
             Assert.IsNotNull(this.asset);
             Assert.AreEqual(folderName, this.asset.Name);
@@ -153,6 +155,7 @@ namespace MediaServices.Client.Extensions.Tests
             Assert.AreEqual("smallwmv2.wmv", assetFiles.ElementAt(2).Name);
             Assert.IsFalse(assetFiles.ElementAt(2).IsPrimary);
 
+            this.context = this.CreateContext();
             Assert.AreEqual(0, this.context.Locators.Where(l => l.AssetId == this.asset.Id).Count());
         }
 
@@ -176,7 +179,7 @@ namespace MediaServices.Client.Extensions.Tests
                 };
 
             var folderName = "Media";
-            this.asset = this.context.CreateAssetFromFolder(folderName, AssetCreationOptions.None, uploadProgressChangedCallback);
+            this.asset = this.context.Assets.CreateFromFolder(folderName, AssetCreationOptions.None, uploadProgressChangedCallback);
 
             Assert.IsNotNull(this.asset);
             Assert.AreEqual(folderName, this.asset.Name);
@@ -197,6 +200,7 @@ namespace MediaServices.Client.Extensions.Tests
             Assert.AreEqual("smallwmv2.wmv", assetFiles.ElementAt(2).Name);
             Assert.IsFalse(assetFiles.ElementAt(2).IsPrimary);
 
+            this.context = this.CreateContext();
             Assert.AreEqual(0, this.context.Locators.Where(l => l.AssetId == this.asset.Id).Count());
         }
 
@@ -208,7 +212,7 @@ namespace MediaServices.Client.Extensions.Tests
 
             try
             {
-                nullContext.CreateAssetFiles(this.asset);
+                nullContext.GenerateFromStorage(this.asset);
             }
             catch (AggregateException exception)
             {
@@ -221,7 +225,7 @@ namespace MediaServices.Client.Extensions.Tests
         {
             try
             {
-                this.context.CreateAssetFiles(null);
+                this.context.GenerateFromStorage(null);
             }
             catch (AggregateException exception)
             {
@@ -231,7 +235,7 @@ namespace MediaServices.Client.Extensions.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\smallwmv1.wmv")]
-        public void ShouldCreateAssetFilesFromBlobStorage()
+        public void ShouldGenerateAssetFilesFromBlobStorage()
         {
             var fileName = "smallwmv1.wmv";
 
@@ -255,7 +259,7 @@ namespace MediaServices.Client.Extensions.Tests
             Assert.AreEqual(0, this.asset.AssetFiles.Count());
 
             // Create the AssetFiles from Blob storage.
-            this.context.CreateAssetFiles(this.asset);
+            this.context.GenerateFromStorage(this.asset);
 
             // Refresh the asset reference.
             this.asset = this.context.Assets.Where(a => a.Id == this.asset.Id).First();
@@ -336,7 +340,7 @@ namespace MediaServices.Client.Extensions.Tests
         public void ShouldDownloadAssetFilesToFolder()
         {
             var originalFolderPath = "Media";
-            this.asset = this.context.CreateAssetFromFolder(originalFolderPath, AssetCreationOptions.None);
+            this.asset = this.context.Assets.CreateFromFolder(originalFolderPath, AssetCreationOptions.None);
 
             var downloadFolderPath = "Media-Downloaded";
             if (Directory.Exists(downloadFolderPath))
@@ -354,6 +358,7 @@ namespace MediaServices.Client.Extensions.Tests
             AssertDownloadedFile(originalFolderPath, downloadFolderPath, "smallwmv2.wmv");
             AssertDownloadedFile(originalFolderPath, downloadFolderPath, "dummy.ism");
 
+            this.context = this.CreateContext();
             Assert.AreEqual(0, this.context.Locators.Where(l => l.AssetId == this.asset.Id).Count());
         }
 
@@ -364,7 +369,7 @@ namespace MediaServices.Client.Extensions.Tests
         public void ShouldDownloadAssetFilesToFolderWithDownloadProgressChangedCallback()
         {
             var originalFolderPath = "Media";
-            this.asset = this.context.CreateAssetFromFolder(originalFolderPath, AssetCreationOptions.None);
+            this.asset = this.context.Assets.CreateFromFolder(originalFolderPath, AssetCreationOptions.None);
 
             var downloadFolderPath = "Media-Downloaded";
             if (Directory.Exists(downloadFolderPath))
@@ -395,6 +400,7 @@ namespace MediaServices.Client.Extensions.Tests
             AssertDownloadedFile(originalFolderPath, downloadFolderPath, "smallwmv2.wmv", downloadResults["smallwmv2.wmv"]);
             AssertDownloadedFile(originalFolderPath, downloadFolderPath, "dummy.ism", downloadResults["dummy.ism"]);
 
+            this.context = this.CreateContext();
             Assert.AreEqual(0, this.context.Locators.Where(l => l.AssetId == this.asset.Id).Count());
         }
 
@@ -405,7 +411,7 @@ namespace MediaServices.Client.Extensions.Tests
         public void ShouldGetManifestAssetFile()
         {
             var folderName = "Media";
-            this.asset = this.context.CreateAssetFromFolder(folderName, AssetCreationOptions.None);
+            this.asset = this.context.Assets.CreateFromFolder(folderName, AssetCreationOptions.None);
 
             var manifestAssetFile = this.asset.GetManifestAssetFile();
 
@@ -417,7 +423,7 @@ namespace MediaServices.Client.Extensions.Tests
         [DeploymentItem(@"Media\smallwmv1.wmv")]
         public void ShouldGetManifestAssetFileReturnNullIfThereIsNoManifestFile()
         {
-            this.asset = this.context.CreateAssetFromFile("smallwmv1.wmv", AssetCreationOptions.None);
+            this.asset = this.context.Assets.CreateFromFile("smallwmv1.wmv", AssetCreationOptions.None);
 
             var manifestAssetFile = this.asset.GetManifestAssetFile();
 
@@ -437,7 +443,7 @@ namespace MediaServices.Client.Extensions.Tests
         [DeploymentItem(@"Media\dummy.ism")]
         public void ShouldGetSmoothStreamingUri()
         {
-            this.asset = this.context.CreateAssetFromFile("dummy.ism", AssetCreationOptions.None);
+            this.asset = this.context.Assets.CreateFromFile("dummy.ism", AssetCreationOptions.None);
 
             var locator = this.context.Locators.Create(LocatorType.OnDemandOrigin, this.asset, AccessPermissions.Read, TimeSpan.FromDays(1));
 
@@ -454,7 +460,7 @@ namespace MediaServices.Client.Extensions.Tests
         [DeploymentItem(@"Media\dummy.ism")]
         public void ShouldGetHlsUri()
         {
-            this.asset = this.context.CreateAssetFromFile("dummy.ism", AssetCreationOptions.None);
+            this.asset = this.context.Assets.CreateFromFile("dummy.ism", AssetCreationOptions.None);
 
             var locator = this.context.Locators.Create(LocatorType.OnDemandOrigin, this.asset, AccessPermissions.Read, TimeSpan.FromDays(1));
 
@@ -471,7 +477,7 @@ namespace MediaServices.Client.Extensions.Tests
         [DeploymentItem(@"Media\dummy.ism")]
         public void ShouldGetMpegDashUri()
         {
-            this.asset = this.context.CreateAssetFromFile("dummy.ism", AssetCreationOptions.None);
+            this.asset = this.context.Assets.CreateFromFile("dummy.ism", AssetCreationOptions.None);
 
             var locator = this.context.Locators.Create(LocatorType.OnDemandOrigin, this.asset, AccessPermissions.Read, TimeSpan.FromDays(1));
 
@@ -497,7 +503,7 @@ namespace MediaServices.Client.Extensions.Tests
         [DeploymentItem(@"Media\smallwmv1.wmv")]
         public void ShouldGetSasUri()
         {
-            this.asset = this.context.CreateAssetFromFile("smallwmv1.wmv", AssetCreationOptions.None);
+            this.asset = this.context.Assets.CreateFromFile("smallwmv1.wmv", AssetCreationOptions.None);
 
             var locator = this.context.Locators.Create(LocatorType.Sas, this.asset, AccessPermissions.Read, TimeSpan.FromDays(1));
 

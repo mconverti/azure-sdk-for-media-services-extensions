@@ -110,7 +110,7 @@ namespace MediaServices.Client.Extensions.Tests
             var taskConfiguration = MediaEncoderTaskPresetStrings.H264SmoothStreaming720p;
             var outputAssetName = "Output Asset Name";
             var outputAssetOptions = AssetCreationOptions.None;
-            this.asset = this.context.CreateAssetFromFile("smallwmv1.wmv", AssetCreationOptions.None);
+            this.asset = this.context.Assets.CreateFromFile("smallwmv1.wmv", AssetCreationOptions.None);
 
             var job = this.context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguration, this.asset, outputAssetName, outputAssetOptions);
 
@@ -266,7 +266,7 @@ namespace MediaServices.Client.Extensions.Tests
             var taskConfiguration = MediaEncoderTaskPresetStrings.H264SmoothStreaming720p;
             var outputAssetName = "Output Asset Name";
             var outputAssetOptions = AssetCreationOptions.None;
-            this.asset = this.context.CreateAssetFromFile("smallwmv1.wmv", AssetCreationOptions.None);
+            this.asset = this.context.Assets.CreateFromFile("smallwmv1.wmv", AssetCreationOptions.None);
 
             var job = this.context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguration, this.asset, outputAssetName, outputAssetOptions);
             job.Submit();
@@ -312,7 +312,7 @@ namespace MediaServices.Client.Extensions.Tests
             var taskConfiguration = MediaEncoderTaskPresetStrings.H264SmoothStreaming720p;
             var outputAssetName = "Output Asset Name";
             var outputAssetOptions = AssetCreationOptions.None;
-            this.asset = this.context.CreateAssetFromFile("smallwmv1.wmv", AssetCreationOptions.None);
+            this.asset = this.context.Assets.CreateFromFile("smallwmv1.wmv", AssetCreationOptions.None);
 
             var job = this.context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguration, this.asset, outputAssetName, outputAssetOptions);
             job.Submit();

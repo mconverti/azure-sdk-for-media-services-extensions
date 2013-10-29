@@ -1,4 +1,4 @@
-﻿// <copyright file="AssetExtensions.cs" company="open-source">
+﻿// <copyright file="AssetBaseCollectionExtensions.cs" company="open-source">
 //  No rights reserved. Copyright (c) 2013 by mconverti
 //   
 //  Redistribution and use in source and binary forms, with or without modification, are permitted.
@@ -21,7 +21,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// Contains extension methods and helpers related to the <see cref="IAsset"/> interface.
     /// </summary>
-    public static class AssetExtensions
+    public static class AssetBaseCollectionExtensions
     {
         /// <summary>
         /// Represents the manifest file extension.
@@ -45,19 +45,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Returns a <see cref="System.Threading.Tasks.Task&lt;IAsset&gt;"/> instance for a new <see cref="IAsset"/> with the file in <paramref name="filePath"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
+        /// <param name="assets">The <see cref="AssetBaseCollection"/> instance.</param>
         /// <param name="filePath">The path to the file to upload to the new <see cref="IAsset"/>.</param>
         /// <param name="storageAccountName">The name of the Storage Account where to store the new <see cref="IAsset"/>.</param>
         /// <param name="options">The <see cref="AssetCreationOptions"/>.</param>
         /// <param name="uploadProgressChangedCallback">A callback to report the upload progress of the file.</param>
         /// <param name="cancellationToken">The <see cref="System.Threading.CancellationToken"/> instance used for cancellation.</param>
         /// <returns>A <see cref="System.Threading.Tasks.Task&lt;IAsset&gt;"/> instance for a new <see cref="IAsset"/> with the file in <paramref name="filePath"/>.</returns>
-        public static async Task<IAsset> CreateAssetFromFileAsync(this CloudMediaContext context, string filePath, string storageAccountName, AssetCreationOptions options, Action<IAssetFile, UploadProgressChangedEventArgs> uploadProgressChangedCallback, CancellationToken cancellationToken)
+        public static async Task<IAsset> CreateFromFileAsync(this AssetBaseCollection assets, string filePath, string storageAccountName, AssetCreationOptions options, Action<IAssetFile, UploadProgressChangedEventArgs> uploadProgressChangedCallback, CancellationToken cancellationToken)
         {
-            if (context == null)
+            if (assets == null)
             {
-                throw new ArgumentNullException("context", "The context cannot be null.");
+                throw new ArgumentNullException("assets", "The assets collection cannot be null.");
             }
+
+            MediaContextBase context = assets.MediaContext;
 
             string assetName = Path.GetFileName(filePath);
 
@@ -66,7 +68,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 storageAccountName = context.DefaultStorageAccount.Name;
             }
 
-            IAsset asset = await context.Assets.CreateAsync(assetName, storageAccountName, options, cancellationToken);
+            IAsset asset = await assets.CreateAsync(assetName, storageAccountName, options, cancellationToken);
 
             ILocator sasLocator = await context.Locators.CreateAsync(LocatorType.Sas, asset, AccessPermissions.Write | AccessPermissions.List, DefaultAccessPolicyDuration);
 
@@ -82,7 +84,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     }
                 };
 
-            await context.CreateAssetFileFromLocalFileAsync(asset, filePath, sasLocator, uploadProgressChangedHandler, cancellationToken);
+            await asset.CreateAssetFileFromLocalFileAsync(filePath, sasLocator, uploadProgressChangedHandler, cancellationToken);
 
             await sasLocator.DeleteAsync();
 
@@ -92,56 +94,56 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Returns a <see cref="System.Threading.Tasks.Task&lt;IAsset&gt;"/> instance for a new <see cref="IAsset"/> with the file in <paramref name="filePath"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
+        /// <param name="assets">The <see cref="AssetBaseCollection"/> instance.</param>
         /// <param name="filePath">The path to the file to upload to the new <see cref="IAsset"/>.</param>
         /// <param name="storageAccountName">The name of the Storage Account where to store the new <see cref="IAsset"/>.</param>
         /// <param name="options">The <see cref="AssetCreationOptions"/>.</param>
         /// <param name="cancellationToken">The <see cref="System.Threading.CancellationToken"/> instance used for cancellation.</param>
         /// <returns>A <see cref="System.Threading.Tasks.Task&lt;IAsset&gt;"/> instance for a new <see cref="IAsset"/> with the file in <paramref name="filePath"/>.</returns>
-        public static Task<IAsset> CreateAssetFromFileAsync(this CloudMediaContext context, string filePath, string storageAccountName, AssetCreationOptions options, CancellationToken cancellationToken)
+        public static Task<IAsset> CreateFromFileAsync(this AssetBaseCollection assets, string filePath, string storageAccountName, AssetCreationOptions options, CancellationToken cancellationToken)
         {
-            return context.CreateAssetFromFileAsync(filePath, storageAccountName, options, null, cancellationToken);
+            return assets.CreateFromFileAsync(filePath, storageAccountName, options, null, cancellationToken);
         }
 
         /// <summary>
         /// Returns a <see cref="System.Threading.Tasks.Task&lt;IAsset&gt;"/> instance for a new <see cref="IAsset"/> with the file in <paramref name="filePath"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
+        /// <param name="assets">The <see cref="AssetBaseCollection"/> instance.</param>
         /// <param name="filePath">The path to the file to upload to the new <see cref="IAsset"/>.</param>
         /// <param name="options">The <see cref="AssetCreationOptions"/>.</param>
         /// <param name="uploadProgressChangedCallback">A callback to report the upload progress of the file.</param>
         /// <param name="cancellationToken">The <see cref="System.Threading.CancellationToken"/> instance used for cancellation.</param>
         /// <returns>A <see cref="System.Threading.Tasks.Task&lt;IAsset&gt;"/> instance for a new <see cref="IAsset"/> with the file in <paramref name="filePath"/>.</returns>
-        public static Task<IAsset> CreateAssetFromFileAsync(this CloudMediaContext context, string filePath, AssetCreationOptions options, Action<IAssetFile, UploadProgressChangedEventArgs> uploadProgressChangedCallback, CancellationToken cancellationToken)
+        public static Task<IAsset> CreateFromFileAsync(this AssetBaseCollection assets, string filePath, AssetCreationOptions options, Action<IAssetFile, UploadProgressChangedEventArgs> uploadProgressChangedCallback, CancellationToken cancellationToken)
         {
-            return context.CreateAssetFromFileAsync(filePath, null, options, uploadProgressChangedCallback, cancellationToken);
+            return assets.CreateFromFileAsync(filePath, null, options, uploadProgressChangedCallback, cancellationToken);
         }
 
         /// <summary>
         /// Returns a <see cref="System.Threading.Tasks.Task&lt;IAsset&gt;"/> instance for a new <see cref="IAsset"/> with the file in <paramref name="filePath"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
+        /// <param name="assets">The <see cref="AssetBaseCollection"/> instance.</param>
         /// <param name="filePath">The path to the file to upload to the new <see cref="IAsset"/>.</param>
         /// <param name="options">The <see cref="AssetCreationOptions"/>.</param>
         /// <param name="cancellationToken">The <see cref="System.Threading.CancellationToken"/> instance used for cancellation.</param>
         /// <returns>A <see cref="System.Threading.Tasks.Task&lt;IAsset&gt;"/> instance for a new <see cref="IAsset"/> with the file in <paramref name="filePath"/>.</returns>
-        public static Task<IAsset> CreateAssetFromFileAsync(this CloudMediaContext context, string filePath, AssetCreationOptions options, CancellationToken cancellationToken)
+        public static Task<IAsset> CreateFromFileAsync(this AssetBaseCollection assets, string filePath, AssetCreationOptions options, CancellationToken cancellationToken)
         {
-            return context.CreateAssetFromFileAsync(filePath, options, null, cancellationToken);
+            return assets.CreateFromFileAsync(filePath, options, null, cancellationToken);
         }
 
         /// <summary>
         /// Returns a new <see cref="IAsset"/> with the file in <paramref name="filePath"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
+        /// <param name="assets">The <see cref="AssetBaseCollection"/> instance.</param>
         /// <param name="filePath">The path to the file to upload to the new <see cref="IAsset"/>.</param>
         /// <param name="storageAccountName">The name of the Storage Account where to store the new <see cref="IAsset"/>.</param>
         /// <param name="options">The <see cref="AssetCreationOptions"/>.</param>
         /// <param name="uploadProgressChangedCallback">A callback to report the upload progress of the file.</param>
         /// <returns>A new <see cref="IAsset"/> with the file in <paramref name="filePath"/>.</returns>
-        public static IAsset CreateAssetFromFile(this CloudMediaContext context, string filePath, string storageAccountName, AssetCreationOptions options, Action<IAssetFile, UploadProgressChangedEventArgs> uploadProgressChangedCallback)
+        public static IAsset CreateFromFile(this AssetBaseCollection assets, string filePath, string storageAccountName, AssetCreationOptions options, Action<IAssetFile, UploadProgressChangedEventArgs> uploadProgressChangedCallback)
         {
-            using (Task<IAsset> task = context.CreateAssetFromFileAsync(filePath, storageAccountName, options, uploadProgressChangedCallback, CancellationToken.None))
+            using (Task<IAsset> task = assets.CreateFromFileAsync(filePath, storageAccountName, options, uploadProgressChangedCallback, CancellationToken.None))
             {
                 return task.Result;
             }
@@ -150,56 +152,56 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Returns a new <see cref="IAsset"/> with the file in <paramref name="filePath"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
+        /// <param name="assets">The <see cref="AssetBaseCollection"/> instance.</param>
         /// <param name="filePath">The path to the file to upload to the new <see cref="IAsset"/>.</param>
         /// <param name="storageAccountName">The name of the Storage Account where to store the new <see cref="IAsset"/>.</param>
         /// <param name="options">The <see cref="AssetCreationOptions"/>.</param>
         /// <returns>A new <see cref="IAsset"/> with the file in <paramref name="filePath"/>.</returns>
-        public static IAsset CreateAssetFromFile(this CloudMediaContext context, string filePath, string storageAccountName, AssetCreationOptions options)
+        public static IAsset CreateFromFile(this AssetBaseCollection assets, string filePath, string storageAccountName, AssetCreationOptions options)
         {
-            return context.CreateAssetFromFile(filePath, storageAccountName, options, null);
+            return assets.CreateFromFile(filePath, storageAccountName, options, null);
         }
 
         /// <summary>
         /// Returns a new <see cref="IAsset"/> with the file in <paramref name="filePath"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
+        /// <param name="assets">The <see cref="AssetBaseCollection"/> instance.</param>
         /// <param name="filePath">The path to the file to upload to the new <see cref="IAsset"/>.</param>
         /// <param name="options">The <see cref="AssetCreationOptions"/>.</param>
         /// <param name="uploadProgressChangedCallback">A callback to report the upload progress of the file.</param>
         /// <returns>A new <see cref="IAsset"/> with the file in <paramref name="filePath"/>.</returns>
-        public static IAsset CreateAssetFromFile(this CloudMediaContext context, string filePath, AssetCreationOptions options, Action<IAssetFile, UploadProgressChangedEventArgs> uploadProgressChangedCallback)
+        public static IAsset CreateFromFile(this AssetBaseCollection assets, string filePath, AssetCreationOptions options, Action<IAssetFile, UploadProgressChangedEventArgs> uploadProgressChangedCallback)
         {
-            return context.CreateAssetFromFile(filePath, null, options, uploadProgressChangedCallback);
+            return assets.CreateFromFile(filePath, null, options, uploadProgressChangedCallback);
         }
 
         /// <summary>
         /// Returns a new <see cref="IAsset"/> with the file in <paramref name="filePath"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
+        /// <param name="assets">The <see cref="AssetBaseCollection"/> instance.</param>
         /// <param name="filePath">The path to the file to upload to the new <see cref="IAsset"/>.</param>
         /// <param name="options">The <see cref="AssetCreationOptions"/>.</param>
         /// <returns>A new <see cref="IAsset"/> with the file in <paramref name="filePath"/>.</returns>
-        public static IAsset CreateAssetFromFile(this CloudMediaContext context, string filePath, AssetCreationOptions options)
+        public static IAsset CreateFromFile(this AssetBaseCollection assets, string filePath, AssetCreationOptions options)
         {
-            return context.CreateAssetFromFile(filePath, options, null);
+            return assets.CreateFromFile(filePath, options, null);
         }
 
         /// <summary>
         /// Returns a <see cref="System.Threading.Tasks.Task&lt;IAsset&gt;"/> instance for a new <see cref="IAsset"/> with the files in <paramref name="folderPath"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
+        /// <param name="assets">The <see cref="AssetBaseCollection"/> instance.</param>
         /// <param name="folderPath">The path to the folder with the files to upload to the new <see cref="IAsset"/>.</param>
         /// <param name="storageAccountName">The name of the Storage Account where to store the new <see cref="IAsset"/>.</param>
         /// <param name="options">The <see cref="AssetCreationOptions"/>.</param>
         /// <param name="uploadProgressChangedCallback">A callback to report upload progress of the files.</param>
         /// <param name="cancellationToken">The <see cref="System.Threading.CancellationToken"/> instance used for cancellation.</param>
         /// <returns>A <see cref="System.Threading.Tasks.Task&lt;IAsset&gt;"/> instance for a new <see cref="IAsset"/> with the files in <paramref name="folderPath"/>.</returns>
-        public static async Task<IAsset> CreateAssetFromFolderAsync(this CloudMediaContext context, string folderPath, string storageAccountName, AssetCreationOptions options, Action<IAssetFile, UploadProgressChangedEventArgs> uploadProgressChangedCallback, CancellationToken cancellationToken)
+        public static async Task<IAsset> CreateFromFolderAsync(this AssetBaseCollection assets, string folderPath, string storageAccountName, AssetCreationOptions options, Action<IAssetFile, UploadProgressChangedEventArgs> uploadProgressChangedCallback, CancellationToken cancellationToken)
         {
-            if (context == null)
+            if (assets == null)
             {
-                throw new ArgumentNullException("context", "The context cannot be null.");
+                throw new ArgumentNullException("assets", "The assets collection cannot be null.");
             }
 
             IEnumerable<string> filePaths = Directory.EnumerateFiles(folderPath);
@@ -208,6 +210,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new FileNotFoundException(
                     string.Format(CultureInfo.InvariantCulture, "No files in directory, check the folder path: '{0}'", folderPath));
             }
+
+            MediaContextBase context = assets.MediaContext;
 
             if (string.IsNullOrWhiteSpace(storageAccountName))
             {
@@ -234,8 +238,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             IList<Task> uploadTasks = new List<Task>();
             foreach (string filePath in filePaths)
             {
-                uploadTasks.Add(
-                    context.CreateAssetFileFromLocalFileAsync(asset, filePath, sasLocator, uploadProgressChangedHandler, cancellationToken));
+                uploadTasks.Add(asset.CreateAssetFileFromLocalFileAsync(filePath, sasLocator, uploadProgressChangedHandler, cancellationToken));
             }
 
             await Task.Factory.ContinueWhenAll(uploadTasks.ToArray(), t => t, TaskContinuationOptions.ExecuteSynchronously);
@@ -248,56 +251,56 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Returns a <see cref="System.Threading.Tasks.Task&lt;IAsset&gt;"/> instance for a new <see cref="IAsset"/> with the files in <paramref name="folderPath"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
+        /// <param name="assets">The <see cref="AssetBaseCollection"/> instance.</param>
         /// <param name="folderPath">The path to the folder with the files to upload to the new <see cref="IAsset"/>.</param>
         /// <param name="storageAccountName">The name of the Storage Account where to store the new <see cref="IAsset"/>.</param>
         /// <param name="options">The <see cref="AssetCreationOptions"/>.</param>
         /// <param name="cancellationToken">The <see cref="System.Threading.CancellationToken"/> instance used for cancellation.</param>
         /// <returns>A <see cref="System.Threading.Tasks.Task&lt;IAsset&gt;"/> instance for a new <see cref="IAsset"/> with the files in <paramref name="folderPath"/>.</returns>
-        public static Task<IAsset> CreateAssetFromFolderAsync(this CloudMediaContext context, string folderPath, string storageAccountName, AssetCreationOptions options, CancellationToken cancellationToken)
+        public static Task<IAsset> CreateFromFolderAsync(this AssetBaseCollection assets, string folderPath, string storageAccountName, AssetCreationOptions options, CancellationToken cancellationToken)
         {
-            return context.CreateAssetFromFolderAsync(folderPath, storageAccountName, options, null, cancellationToken);
+            return assets.CreateFromFolderAsync(folderPath, storageAccountName, options, null, cancellationToken);
         }
 
         /// <summary>
         /// Returns a <see cref="System.Threading.Tasks.Task&lt;IAsset&gt;"/> instance for a new <see cref="IAsset"/> with the files in <paramref name="folderPath"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
+        /// <param name="assets">The <see cref="AssetBaseCollection"/> instance.</param>
         /// <param name="folderPath">The path to the folder with the files to upload to the new <see cref="IAsset"/>.</param>
         /// <param name="options">The <see cref="AssetCreationOptions"/>.</param>
         /// <param name="uploadProgressChangedCallback">A callback to report upload progress of the files.</param>
         /// <param name="cancellationToken">The <see cref="System.Threading.CancellationToken"/> instance used for cancellation.</param>
         /// <returns>A <see cref="System.Threading.Tasks.Task&lt;IAsset&gt;"/> instance for a new <see cref="IAsset"/> with the files in <paramref name="folderPath"/>.</returns>
-        public static Task<IAsset> CreateAssetFromFolderAsync(this CloudMediaContext context, string folderPath, AssetCreationOptions options, Action<IAssetFile, UploadProgressChangedEventArgs> uploadProgressChangedCallback, CancellationToken cancellationToken)
+        public static Task<IAsset> CreateFromFolderAsync(this AssetBaseCollection assets, string folderPath, AssetCreationOptions options, Action<IAssetFile, UploadProgressChangedEventArgs> uploadProgressChangedCallback, CancellationToken cancellationToken)
         {
-            return context.CreateAssetFromFolderAsync(folderPath, null, options, uploadProgressChangedCallback, cancellationToken);
+            return assets.CreateFromFolderAsync(folderPath, null, options, uploadProgressChangedCallback, cancellationToken);
         }
 
         /// <summary>
         /// Returns a <see cref="System.Threading.Tasks.Task&lt;IAsset&gt;"/> instance for the new <see cref="IAsset"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
+        /// <param name="assets">The <see cref="AssetBaseCollection"/> instance.</param>
         /// <param name="folderPath">The path to the folder with the files to upload to the new <see cref="IAsset"/>.</param>
         /// <param name="options">The <see cref="AssetCreationOptions"/>.</param>
         /// <param name="cancellationToken">The <see cref="System.Threading.CancellationToken"/> instance used for cancellation.</param>
         /// <returns>A <see cref="System.Threading.Tasks.Task&lt;IAsset&gt;"/> instance for new <see cref="IAsset"/>.</returns>
-        public static Task<IAsset> CreateAssetFromFolderAsync(this CloudMediaContext context, string folderPath, AssetCreationOptions options, CancellationToken cancellationToken)
+        public static Task<IAsset> CreateFromFolderAsync(this AssetBaseCollection assets, string folderPath, AssetCreationOptions options, CancellationToken cancellationToken)
         {
-            return context.CreateAssetFromFolderAsync(folderPath, options, null, cancellationToken);
+            return assets.CreateFromFolderAsync(folderPath, options, null, cancellationToken);
         }
 
         /// <summary>
         /// Returns a new <see cref="IAsset"/> with the files in <paramref name="folderPath"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
+        /// <param name="assets">The <see cref="AssetBaseCollection"/> instance.</param>
         /// <param name="folderPath">The path to the folder with the files to upload to the new <see cref="IAsset"/>.</param>
         /// <param name="storageAccountName">The name of the Storage Account where to store the new <see cref="IAsset"/>.</param>
         /// <param name="options">The <see cref="AssetCreationOptions"/>.</param>
         /// <param name="uploadProgressChangedCallback">A callback to report upload progress of the files.</param>
         /// <returns>A new <see cref="IAsset"/> with the files in <paramref name="folderPath"/>.</returns>
-        public static IAsset CreateAssetFromFolder(this CloudMediaContext context, string folderPath, string storageAccountName, AssetCreationOptions options, Action<IAssetFile, UploadProgressChangedEventArgs> uploadProgressChangedCallback)
+        public static IAsset CreateFromFolder(this AssetBaseCollection assets, string folderPath, string storageAccountName, AssetCreationOptions options, Action<IAssetFile, UploadProgressChangedEventArgs> uploadProgressChangedCallback)
         {
-            using (Task<IAsset> task = context.CreateAssetFromFolderAsync(folderPath, storageAccountName, options, uploadProgressChangedCallback, CancellationToken.None))
+            using (Task<IAsset> task = assets.CreateFromFolderAsync(folderPath, storageAccountName, options, uploadProgressChangedCallback, CancellationToken.None))
             {
                 return task.Result;
             }
@@ -306,39 +309,39 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Returns a new <see cref="IAsset"/> with the files in <paramref name="folderPath"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
+        /// <param name="assets">The <see cref="AssetBaseCollection"/> instance.</param>
         /// <param name="folderPath">The path to the folder with the files to upload to the new <see cref="IAsset"/>.</param>
         /// <param name="storageAccountName">The name of the Storage Account where to store the new <see cref="IAsset"/>.</param>
         /// <param name="options">The <see cref="AssetCreationOptions"/>.</param>
         /// <returns>A new <see cref="IAsset"/> with the files in <paramref name="folderPath"/>.</returns>
-        public static IAsset CreateAssetFromFolder(this CloudMediaContext context, string folderPath, string storageAccountName, AssetCreationOptions options)
+        public static IAsset CreateFromFolder(this AssetBaseCollection assets, string folderPath, string storageAccountName, AssetCreationOptions options)
         {
-            return context.CreateAssetFromFolder(folderPath, storageAccountName, options, null);
+            return assets.CreateFromFolder(folderPath, storageAccountName, options, null);
         }
 
         /// <summary>
         /// Returns a new <see cref="IAsset"/> with the files in <paramref name="folderPath"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
+        /// <param name="assets">The <see cref="AssetBaseCollection"/> instance.</param>
         /// <param name="folderPath">The path to the folder with the files to upload to the new <see cref="IAsset"/>.</param>
         /// <param name="options">The <see cref="AssetCreationOptions"/>.</param>
         /// <param name="uploadProgressChangedCallback">A callback to report upload progress of the files.</param>
         /// <returns>A new <see cref="IAsset"/> with the files in <paramref name="folderPath"/>.</returns>
-        public static IAsset CreateAssetFromFolder(this CloudMediaContext context, string folderPath, AssetCreationOptions options, Action<IAssetFile, UploadProgressChangedEventArgs> uploadProgressChangedCallback)
+        public static IAsset CreateFromFolder(this AssetBaseCollection assets, string folderPath, AssetCreationOptions options, Action<IAssetFile, UploadProgressChangedEventArgs> uploadProgressChangedCallback)
         {
-            return context.CreateAssetFromFolder(folderPath, null, options, uploadProgressChangedCallback);
+            return assets.CreateFromFolder(folderPath, null, options, uploadProgressChangedCallback);
         }
 
         /// <summary>
         /// Returns a new <see cref="IAsset"/> with the files in <paramref name="folderPath"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
+        /// <param name="assets">The <see cref="AssetBaseCollection"/> instance.</param>
         /// <param name="folderPath">The path to the folder with the files to upload to the new <see cref="IAsset"/>.</param>
         /// <param name="options">The <see cref="AssetCreationOptions"/>.</param>
         /// <returns>A new <see cref="IAsset"/> with the files in <paramref name="folderPath"/>.</returns>
-        public static IAsset CreateAssetFromFolder(this CloudMediaContext context, string folderPath, AssetCreationOptions options)
+        public static IAsset CreateFromFolder(this AssetBaseCollection assets, string folderPath, AssetCreationOptions options)
         {
-            return context.CreateAssetFromFolder(folderPath, options, null);
+            return assets.CreateFromFolder(folderPath, options, null);
         }
 
         /// <summary>
@@ -347,7 +350,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
         /// <param name="asset">The <see cref="IAsset"/> instance where to generate its <see cref="IAssetFile"/>.</param>
         /// <returns>A <see cref="System.Threading.Tasks.Task"/> to generate <see cref="IAssetFile"/>.</returns>
-        public static async Task CreateAssetFilesAsync(this CloudMediaContext context, IAsset asset)
+        public static async Task GenerateFromStorageAsync(this CloudMediaContext context, IAsset asset)
         {
             if (context == null)
             {
@@ -374,9 +377,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
         /// <param name="asset">The <see cref="IAsset"/> instance where to generate its <see cref="IAssetFile"/>.</param>
-        public static void CreateAssetFiles(this CloudMediaContext context, IAsset asset)
+        public static void GenerateFromStorage(this CloudMediaContext context, IAsset asset)
         {
-            using (Task task = context.CreateAssetFilesAsync(asset))
+            using (Task task = context.GenerateFromStorageAsync(asset))
             {
                 task.Wait();
             }
@@ -570,10 +573,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return sasUri;
         }
 
-        private static async Task<IAssetFile> CreateAssetFileFromLocalFileAsync(this CloudMediaContext context, IAsset asset, string filePath, ILocator sasLocator, EventHandler<UploadProgressChangedEventArgs> uploadProgressChangedEventArgs, CancellationToken cancellationToken)
+        /// <summary>
+        /// Returns the parent <see cref="MediaContextBase"/> instance.
+        /// </summary>
+        /// <param name="asset">The <see cref="IAsset"/> instance.</param>
+        /// <returns>The parent <see cref="MediaContextBase"/> instance.</returns>
+        public static MediaContextBase GetMediaContext(this IAsset asset)
+        {
+            IMediaContextContainer mediaContextContainer = asset as IMediaContextContainer;
+            MediaContextBase context = null;
+            
+            if (mediaContextContainer != null)
+            {
+                context = mediaContextContainer.GetMediaContext();
+            }
+
+            return context;
+        }
+
+        private static async Task<IAssetFile> CreateAssetFileFromLocalFileAsync(this IAsset asset, string filePath, ILocator sasLocator, EventHandler<UploadProgressChangedEventArgs> uploadProgressChangedEventArgs, CancellationToken cancellationToken)
         {
             string assetFileName = Path.GetFileName(filePath);
             IAssetFile assetFile = await asset.AssetFiles.CreateAsync(assetFileName, cancellationToken);
+            MediaContextBase context = asset.GetMediaContext();
 
             assetFile.UploadProgressChanged += uploadProgressChangedEventArgs;
 
