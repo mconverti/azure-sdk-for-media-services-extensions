@@ -78,32 +78,10 @@ namespace MediaServices.Client.Extensions.Tests
         }
 
         [TestMethod]
-        public void ShouldThrowDownloadAssetFilesToFolderIfContextIsNull()
-        {
-            CloudMediaContext nullContext = null;
-            this.asset = this.context.Assets.Create("empty", AssetCreationOptions.None);
-            var downloadFolderPath = "Media-Downloaded";
-            if (Directory.Exists(downloadFolderPath))
-            {
-                Directory.Delete(downloadFolderPath, true);
-            }
-
-            Directory.CreateDirectory(downloadFolderPath);
-
-            try
-            {
-                nullContext.DownloadAssetFilesToFolder(this.asset, downloadFolderPath);
-            }
-            catch (AggregateException exception)
-            {
-                Assert.IsInstanceOfType(exception.InnerException, typeof(ArgumentNullException));
-            }
-        }
-
-        [TestMethod]
         public void ShouldThrowDownloadAssetFilesToFolderIfAssetIsNull()
         {
             IAsset nullAsset = null;
+
             var downloadFolderPath = "Media-Downloaded";
             if (Directory.Exists(downloadFolderPath))
             {
@@ -114,7 +92,7 @@ namespace MediaServices.Client.Extensions.Tests
 
             try
             {
-                this.context.DownloadAssetFilesToFolderAsync(nullAsset, downloadFolderPath, CancellationToken.None);
+                nullAsset.DownloadToFolderAsync(downloadFolderPath, CancellationToken.None);
             }
             catch (AggregateException exception)
             {
@@ -126,6 +104,7 @@ namespace MediaServices.Client.Extensions.Tests
         public void ShouldThrowDownloadAssetFilesToFolderIfFolderPathDoesNotExist()
         {
             this.asset = this.context.Assets.Create("empty", AssetCreationOptions.None);
+
             var downloadFolderPath = "Media-Downloaded";
             if (Directory.Exists(downloadFolderPath))
             {
@@ -134,7 +113,7 @@ namespace MediaServices.Client.Extensions.Tests
 
             try
             {
-                this.context.DownloadAssetFilesToFolder(this.asset, downloadFolderPath);
+                this.asset.DownloadToFolder(downloadFolderPath);
             }
             catch (AggregateException exception)
             {
@@ -160,7 +139,7 @@ namespace MediaServices.Client.Extensions.Tests
 
             Directory.CreateDirectory(downloadFolderPath);
 
-            this.context.DownloadAssetFilesToFolder(this.asset, downloadFolderPath);
+            this.asset.DownloadToFolder(downloadFolderPath);
 
             Assert.AreEqual(3, Directory.GetFiles(downloadFolderPath).Length);
 
@@ -201,7 +180,7 @@ namespace MediaServices.Client.Extensions.Tests
                     downloadResults.AddOrUpdate(assetFile.Name, eventArgs, (k, e2) => eventArgs);
                 };
 
-            this.context.DownloadAssetFilesToFolder(this.asset, downloadFolderPath, downloadProgressChangedCallback);
+            this.asset.DownloadToFolder(downloadFolderPath, downloadProgressChangedCallback);
 
             Assert.AreEqual(3, downloadResults.Count);
             Assert.AreEqual(3, Directory.GetFiles(downloadFolderPath).Length);
@@ -347,7 +326,6 @@ namespace MediaServices.Client.Extensions.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void ShouldGetMediaContext()
         {
             this.asset = this.context.Assets.Create("empty", AssetCreationOptions.None);

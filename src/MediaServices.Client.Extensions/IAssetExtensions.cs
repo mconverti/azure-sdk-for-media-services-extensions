@@ -19,7 +19,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Contains extension methods and helpers for the <see cref="IAsset"/> interface.
+    /// Contains extension methods and helpers for the <see cref="IAsset"/> and <see cref="IAssetFiles"/> interfaces.
     /// </summary>
     public static class IAssetExtensions
     {
@@ -38,7 +38,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public const string MpegDashStreamingParameter = "(format=mpd-time-csf)";
 
-        private const string BaseStreamingUrlTemplate = "{0}/{1}/manifest{2}";
+        internal const string BaseStreamingUrlTemplate = "{0}/{1}/manifest{2}";
 
         /// <summary>
         /// Returns a <see cref="System.Threading.Tasks.Task"/> instance to generate <see cref="IAssetFile"/> for the <paramref name="asset"/>.
@@ -79,19 +79,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Returns a <see cref="System.Threading.Tasks.Task"/> instance to download all the asset files in the <paramref name="asset"/> to the <paramref name="folderPath"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
         /// <param name="asset">The <see cref="IAsset"/> instance where to download the asset files.</param>
         /// <param name="folderPath">The path to the folder where to download the asset files in the <paramref name="asset"/>.</param>
         /// <param name="downloadProgressChangedCallback">A callback to report download progress for each asset file in the <paramref name="asset"/>.</param>
         /// <param name="cancellationToken">The <see cref="System.Threading.CancellationToken"/> instance used for cancellation.</param>
         /// <returns>A <see cref="System.Threading.Tasks.Task"/> instance to download all the asset files in the <paramref name="asset"/>.</returns>
-        public static async Task DownloadAssetFilesToFolderAsync(this CloudMediaContext context, IAsset asset, string folderPath, Action<IAssetFile, DownloadProgressChangedEventArgs> downloadProgressChangedCallback, CancellationToken cancellationToken)
+        public static async Task DownloadToFolderAsync(this IAsset asset, string folderPath, Action<IAssetFile, DownloadProgressChangedEventArgs> downloadProgressChangedCallback, CancellationToken cancellationToken)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException("context", "The context cannot be null.");
-            }
-
             if (asset == null)
             {
                 throw new ArgumentNullException("asset", "The asset cannot be null.");
@@ -103,6 +97,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     string.Format(CultureInfo.InvariantCulture, "The folder '{0}' does not exist.", folderPath),
                     "folderPath");
             }
+
+            MediaContextBase context = asset.GetMediaContext();
 
             ILocator sasLocator = await context.Locators.CreateAsync(LocatorType.Sas, asset, AccessPermissions.Read, AssetBaseCollectionExtensions.DefaultAccessPolicyDuration);
 
@@ -145,26 +141,24 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Returns a <see cref="System.Threading.Tasks.Task"/> instance to download all the asset files in the <paramref name="asset"/> to the <paramref name="folderPath"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
         /// <param name="asset">The <see cref="IAsset"/> instance where to download the asset files.</param>
         /// <param name="folderPath">The path to the folder where to download the asset files in the <paramref name="asset"/>.</param>
         /// <param name="cancellationToken">The <see cref="System.Threading.CancellationToken"/> instance used for cancellation.</param>
         /// <returns>A <see cref="System.Threading.Tasks.Task"/> instance to download all the asset files in the <paramref name="asset"/>.</returns>
-        public static Task DownloadAssetFilesToFolderAsync(this CloudMediaContext context, IAsset asset, string folderPath, CancellationToken cancellationToken)
+        public static Task DownloadToFolderAsync(this IAsset asset, string folderPath, CancellationToken cancellationToken)
         {
-            return context.DownloadAssetFilesToFolderAsync(asset, folderPath, null, cancellationToken);
+            return asset.DownloadToFolderAsync(folderPath, null, cancellationToken);
         }
 
         /// <summary>
         /// Downloads all the asset files in the <paramref name="asset"/> to the <paramref name="folderPath"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
         /// <param name="asset">The <see cref="IAsset"/> instance where to download the asset files.</param>
         /// <param name="folderPath">The path to the folder where to download the asset files in the <paramref name="asset"/>.</param>
         /// <param name="downloadProgressChangedCallback">A callback to report download progress for each asset file in the <paramref name="asset"/>.</param>
-        public static void DownloadAssetFilesToFolder(this CloudMediaContext context, IAsset asset, string folderPath, Action<IAssetFile, DownloadProgressChangedEventArgs> downloadProgressChangedCallback)
+        public static void DownloadToFolder(this IAsset asset, string folderPath, Action<IAssetFile, DownloadProgressChangedEventArgs> downloadProgressChangedCallback)
         {
-            using (Task task = context.DownloadAssetFilesToFolderAsync(asset, folderPath, downloadProgressChangedCallback, CancellationToken.None))
+            using (Task task = asset.DownloadToFolderAsync(folderPath, downloadProgressChangedCallback, CancellationToken.None))
             {
                 task.Wait();
             }
@@ -173,12 +167,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Downloads all the asset files in the <paramref name="asset"/> to the <paramref name="folderPath"/>.
         /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
         /// <param name="asset">The <see cref="IAsset"/> instance where to download the asset files.</param>
         /// <param name="folderPath">The path to the folder where to download the asset files in the <paramref name="asset"/>.</param>
-        public static void DownloadAssetFilesToFolder(this CloudMediaContext context, IAsset asset, string folderPath)
+        public static void DownloadToFolder(this IAsset asset, string folderPath)
         {
-            context.DownloadAssetFilesToFolder(asset, folderPath, null);
+            asset.DownloadToFolder(folderPath, null);
         }
 
         /// <summary>
@@ -201,7 +194,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Returns the Smooth Streaming URL of the <paramref name="asset"/>; otherwise, null.
+        /// Returns the Smooth Streaming URL of the <paramref name="asset"/> using the on-demand origin locator with the longest expiration time; otherwise, null.
         /// </summary>
         /// <param name="asset">The <see cref="IAsset"/> instance.</param>
         /// <returns>A <see cref="System.Uri"/> representing the Smooth Streaming URL of the <paramref name="asset"/>; otherwise, null.</returns>
@@ -211,7 +204,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Returns the HLS URL of the <paramref name="asset"/>; otherwise, null.
+        /// Returns the HLS URL of the <paramref name="asset"/> using the on-demand origin locator with the longest expiration time; otherwise, null.
         /// </summary>
         /// <param name="asset">The <see cref="IAsset"/> instance.</param>
         /// <returns>A <see cref="System.Uri"/> representing the HLS URL of the <paramref name="asset"/>; otherwise, null.</returns>
@@ -221,7 +214,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Returns the MPEG-DASH URL of the <paramref name="asset"/>; otherwise, null.
+        /// Returns the MPEG-DASH URL of the <paramref name="asset"/> using the on-demand origin locator with the longest expiration time; otherwise, null.
         /// </summary>
         /// <param name="asset">The <see cref="IAsset"/> instance.</param>
         /// <returns>A <see cref="System.Uri"/> representing the MPEG-DASH URL of the <paramref name="asset"/>; otherwise, null.</returns>
@@ -231,7 +224,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Returns the SAS URL of the <paramref name="assetFile"/> for progressive download; otherwise, null.
+        /// Returns the SAS URL of the <paramref name="assetFile"/> for progressive download using the SAS locator with the longest expiration time; otherwise, null.
         /// </summary>
         /// <param name="assetFile">The <see cref="IAssetFile"/> instance.</param>
         /// <returns>A <see cref="System.Uri"/> representing the SAS URL of the <paramref name="assetFile"/> for progressive download; otherwise, null.</returns>

@@ -91,14 +91,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssetBaseCollectionExtensions.cs" />
+    <Compile Include="JobBaseCollectionExtensions.cs" />
+    <Compile Include="MediaProcessorBaseCollectionExtensions.cs" />
     <Compile Include="IAssetExtensions.cs" />
     <Compile Include="LocatorBaseCollectionExtensions.cs" />
     <Compile Include="MediaEncoderTaskPresetStrings.cs" />
     <Compile Include="MediaProcessorNames.cs" />
     <Compile Include="MediaServicesExceptionParser.cs" />
-    <Compile Include="JobExtensions.cs" />
+    <Compile Include="IJobExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UrlExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

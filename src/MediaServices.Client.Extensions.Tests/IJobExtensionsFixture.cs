@@ -1,4 +1,4 @@
-﻿// <copyright file="JobExtensionsFixture.cs" company="open-source">
+﻿// <copyright file="IJobExtensionsFixture.cs" company="open-source">
 //  No rights reserved. Copyright (c) 2013 by mconverti
 //   
 //  Redistribution and use in source and binary forms, with or without modification, are permitted.
@@ -12,134 +12,17 @@ namespace MediaServices.Client.Extensions.Tests
 {
     using System;
     using System.Configuration;
-    using System.Linq;
     using System.Threading;
     using MediaServices.Client.Extensions.Tests.Mocks;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Microsoft.WindowsAzure.MediaServices.Client;
 
     [TestClass]
-    public class JobExtensionsFixture
+    public class IJobExtensionsFixture
     {
         private CloudMediaContext context;
         private IAsset asset;
         private IAsset outputAsset;
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ShouldThrowWhenGetLatestMediaProcessorByNameIfMediaProcessorCollectionIsNull()
-        {
-            MediaProcessorBaseCollection nullMediaProcessorCollection = null;
-
-            nullMediaProcessorCollection.GetLatestMediaProcessorByName(MediaProcessorNames.WindowsAzureMediaEncoder);
-        }
-
-        [TestMethod]
-        public void ShouldGetLatestMediaProcessorByNameReturnNullIfMediaProcessorNameIsNotValid()
-        {
-            var mediaProcessorName = "Invalid Media Processor Name";
-            var mediaProcessor = this.context.MediaProcessors.GetLatestMediaProcessorByName(mediaProcessorName);
-
-            Assert.IsNull(mediaProcessor);
-        }
-
-        [TestMethod]
-        public void ShouldGetLatestMediaProcessorByName()
-        {
-            var mediaProcessor = this.context.MediaProcessors.GetLatestMediaProcessorByName(MediaProcessorNames.WindowsAzureMediaEncoder);
-
-            Assert.IsNotNull(mediaProcessor);
-
-            var expectedMediaProcessor = this.context.MediaProcessors
-                .Where(mp => mp.Name == MediaProcessorNames.WindowsAzureMediaEncoder)
-                .ToList()
-                .Select(mp => new { mp.Id, mp.Name, Version = new Version(mp.Version) })
-                .OrderBy(mp => mp.Version)
-                .Last();
-
-            Assert.AreEqual(expectedMediaProcessor.Id, mediaProcessor.Id);
-            Assert.AreEqual(expectedMediaProcessor.Name, mediaProcessor.Name);
-            Assert.AreEqual(expectedMediaProcessor.Version, new Version(mediaProcessor.Version));
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ShouldThrowPrepareJobWithSingleTaskIfContextIsNull()
-        {
-            var mediaProcessorName = MediaProcessorNames.WindowsAzureMediaEncoder;
-            var taskConfiguration = MediaEncoderTaskPresetStrings.H264SmoothStreaming720p;
-            var outputAssetName = "Output Asset Name";
-            var outputAssetOptions = AssetCreationOptions.None;
-            this.asset = this.context.Assets.Create("empty", AssetCreationOptions.None);
-            CloudMediaContext nullContext = null;
-
-            nullContext.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguration, this.asset, outputAssetName, outputAssetOptions);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ShouldThrowPrepareJobWithSingleTaskIfInputAssetIsNull()
-        {
-            var mediaProcessorName = MediaProcessorNames.WindowsAzureMediaEncoder;
-            var taskConfiguration = MediaEncoderTaskPresetStrings.H264SmoothStreaming720p;
-            var outputAssetName = "Output Asset Name";
-            var outputAssetOptions = AssetCreationOptions.None;
-            IAsset inputAsset = null;
-
-            this.context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguration, inputAsset, outputAssetName, outputAssetOptions);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void ShouldThrowPrepareJobWithSingleTaskIfMediaProcessorNameIsUnknown()
-        {
-            var mediaProcessorName = "Unknown Media Processor";
-            var taskConfiguration = MediaEncoderTaskPresetStrings.H264SmoothStreaming720p;
-            var outputAssetName = "Output Asset Name";
-            var outputAssetOptions = AssetCreationOptions.None;
-            this.asset = this.context.Assets.Create("empty", AssetCreationOptions.None);
-
-            this.context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguration, this.asset, outputAssetName, outputAssetOptions);
-        }
-
-        [TestMethod]
-        [DeploymentItem(@"Media\smallwmv1.wmv")]
-        public void ShouldPrepareJobWithSingleTask()
-        {
-            var mediaProcessorName = MediaProcessorNames.WindowsAzureMediaEncoder;
-            var taskConfiguration = MediaEncoderTaskPresetStrings.H264SmoothStreaming720p;
-            var outputAssetName = "Output Asset Name";
-            var outputAssetOptions = AssetCreationOptions.None;
-            this.asset = this.context.Assets.CreateFromFile("smallwmv1.wmv", AssetCreationOptions.None);
-
-            var job = this.context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguration, this.asset, outputAssetName, outputAssetOptions);
-
-            Assert.IsNotNull(job);
-            Assert.AreEqual(1, job.Tasks.Count);
-
-            var task = job.Tasks[0];
-
-            Assert.IsNotNull(task);
-            Assert.AreEqual(taskConfiguration, task.Configuration);
-            Assert.AreEqual(1, task.InputAssets.Count);
-            Assert.AreSame(this.asset, task.InputAssets[0]);
-            Assert.AreEqual(1, task.OutputAssets.Count);
-            Assert.AreEqual(outputAssetName, task.OutputAssets[0].Name);
-            Assert.AreEqual(outputAssetOptions, task.OutputAssets[0].Options);
-            Assert.AreEqual(this.context.MediaProcessors.GetLatestMediaProcessorByName(mediaProcessorName).Id, task.MediaProcessorId);
-
-            job.Submit();
-            job.GetExecutionProgressTask(CancellationToken.None).Wait();
-
-            Assert.AreEqual(JobState.Finished, job.State);
-            Assert.AreEqual(1, job.OutputMediaAssets.Count);
-
-            this.outputAsset = job.OutputMediaAssets[0];
-
-            Assert.IsNotNull(this.outputAsset);
-            Assert.AreEqual(outputAssetName, this.outputAsset.Name);
-            Assert.AreEqual(outputAssetOptions, this.outputAsset.Options);
-        }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -226,21 +109,11 @@ namespace MediaServices.Client.Extensions.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void ShouldThrowStartExecutionProgressTaskIfContextIsNull()
-        {
-            MediaContextBase nullContext = null;
-            IJob job = this.context.Jobs.Create("TestJob");
-
-            nullContext.StartExecutionProgressTask(job, j => { }, CancellationToken.None);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void ShouldThrowStartExecutionProgressTaskIfJobIsNull()
         {
             IJob nullJob = null;
 
-            this.context.StartExecutionProgressTask(nullJob, j => { }, CancellationToken.None);
+            nullJob.StartExecutionProgressTask(j => { }, CancellationToken.None);
         }
 
         [TestMethod]
@@ -253,9 +126,9 @@ namespace MediaServices.Client.Extensions.Tests
             var outputAssetOptions = AssetCreationOptions.None;
             this.asset = this.context.Assets.Create("TestAsset", AssetCreationOptions.None);
 
-            var job = this.context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguration, this.asset, outputAssetName, outputAssetOptions);
+            var job = this.context.Jobs.CreateWithSingleTask(mediaProcessorName, taskConfiguration, this.asset, outputAssetName, outputAssetOptions);
 
-            this.context.StartExecutionProgressTask(job, j => { }, CancellationToken.None);
+            job.StartExecutionProgressTask(j => { }, CancellationToken.None);
         }
 
         [TestMethod]
@@ -268,15 +141,14 @@ namespace MediaServices.Client.Extensions.Tests
             var outputAssetOptions = AssetCreationOptions.None;
             this.asset = this.context.Assets.CreateFromFile("smallwmv1.wmv", AssetCreationOptions.None);
 
-            var job = this.context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguration, this.asset, outputAssetName, outputAssetOptions);
+            var job = this.context.Jobs.CreateWithSingleTask(mediaProcessorName, taskConfiguration, this.asset, outputAssetName, outputAssetOptions);
             job.Submit();
 
             var previousState = job.State;
             var previousOverallProgress = job.GetOverallProgress();
             var callbackInvocations = 0;
 
-            var executionProgressTask = this.context.StartExecutionProgressTask(
-                job,
+            var executionProgressTask = job.StartExecutionProgressTask(
                 j =>
                 {
                     callbackInvocations++;
@@ -314,10 +186,10 @@ namespace MediaServices.Client.Extensions.Tests
             var outputAssetOptions = AssetCreationOptions.None;
             this.asset = this.context.Assets.CreateFromFile("smallwmv1.wmv", AssetCreationOptions.None);
 
-            var job = this.context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguration, this.asset, outputAssetName, outputAssetOptions);
+            var job = this.context.Jobs.CreateWithSingleTask(mediaProcessorName, taskConfiguration, this.asset, outputAssetName, outputAssetOptions);
             job.Submit();
 
-            job = this.context.StartExecutionProgressTask(job, null, CancellationToken.None).Result;
+            job = job.StartExecutionProgressTask(null, CancellationToken.None).Result;
 
             Assert.AreEqual(JobState.Finished, job.State);
             Assert.AreEqual(100, job.GetOverallProgress());
@@ -328,6 +200,26 @@ namespace MediaServices.Client.Extensions.Tests
             Assert.IsNotNull(this.outputAsset);
             Assert.AreEqual(outputAssetName, this.outputAsset.Name);
             Assert.AreEqual(outputAssetOptions, this.outputAsset.Options);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ShouldThrowGetMediaContextIfJobIsNull()
+        {
+            IJob nullJob = null;
+
+            nullJob.GetMediaContext();
+        }
+
+        [TestMethod]
+        public void ShouldGetMediaContext()
+        {
+            var job = this.context.Jobs.Create("test");
+
+            var mediaContext = job.GetMediaContext();
+
+            Assert.IsNotNull(mediaContext);
+            Assert.AreSame(this.context, mediaContext);
         }
 
         [TestInitialize]

@@ -93,15 +93,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssetBaseCollectionExtensionsFixture.cs" />
+    <Compile Include="JobBaseCollectionExtensionsFixture.cs" />
+    <Compile Include="MediaProcessorBaseCollectionExtensionsFixture.cs" />
     <Compile Include="IAssetExtensionsFixture.cs" />
     <Compile Include="LocatorBaseCollectionExtensionsFixture.cs" />
     <Compile Include="MediaServicesExceptionParserFixture.cs" />
-    <Compile Include="JobExtensionsFixture.cs" />
+    <Compile Include="IJobExtensionsFixture.cs" />
     <Compile Include="Mocks\JobMock.cs" />
     <Compile Include="Mocks\TaskCollectionMock.cs" />
     <Compile Include="Mocks\TaskMock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UrlExtensionsFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MediaServices.Client.Extensions\MediaServices.Client.Extensions.csproj">
