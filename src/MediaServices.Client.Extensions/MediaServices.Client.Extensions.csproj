@@ -91,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssetBaseCollectionExtensions.cs" />
+    <Compile Include="IAssetExtensions.cs" />
     <Compile Include="LocatorBaseCollectionExtensions.cs" />
     <Compile Include="MediaEncoderTaskPresetStrings.cs" />
     <Compile Include="MediaProcessorNames.cs" />

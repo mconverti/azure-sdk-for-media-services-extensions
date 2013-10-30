@@ -14,7 +14,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Contains extension methods and helpers for <see cref="LocatorBaseCollection"/> class.
+    /// Contains extension methods and helpers for the <see cref="LocatorBaseCollection"/> class.
     /// </summary>
     public static class LocatorBaseCollectionExtensions
     {
