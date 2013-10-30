@@ -288,16 +288,16 @@ namespace MediaServices.Client.Extensions.Tests
         }
 
         [TestMethod]
-        [DeploymentItem(@"Media\smallwmv1.wmv")]
+        [DeploymentItem(@"Media\dummy.ism")]
         public void ShouldGetSasUri()
         {
-            this.asset = this.context.Assets.CreateFromFile("smallwmv1.wmv", AssetCreationOptions.None);
+            this.asset = this.context.Assets.CreateFromFile("dummy.ism", AssetCreationOptions.None);
 
             var locator = this.context.Locators.Create(LocatorType.Sas, this.asset, AccessPermissions.Read, TimeSpan.FromDays(1));
 
-            var assetFiles = this.asset.AssetFiles.First();
+            var assetFile = this.asset.AssetFiles.First();
 
-            var sasUri = assetFiles.GetSasUri();
+            var sasUri = assetFile.GetSasUri();
 
             Assert.IsNotNull(sasUri);
 
@@ -314,6 +314,88 @@ namespace MediaServices.Client.Extensions.Tests
             IAssetFile nullAssetFile = null;
 
             nullAssetFile.GetSasUri();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        [DeploymentItem(@"Media\dummy.ism")]
+        public void ShouldThrowGetSasUriWithSpecificLocatorIfAssetFileIsNull()
+        {
+            this.asset = this.context.Assets.CreateFromFile("dummy.ism", AssetCreationOptions.None);
+
+            var locator = this.context.Locators.Create(LocatorType.Sas, this.asset, AccessPermissions.Read, TimeSpan.FromDays(1));
+
+            IAssetFile nullAssetFile = null;
+
+            nullAssetFile.GetSasUri(locator);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        [DeploymentItem(@"Media\dummy.ism")]
+        public void ShouldThrowGetSasUriWithSpecificLocatorIfLocatorIsNull()
+        {
+            this.asset = this.context.Assets.CreateFromFile("dummy.ism", AssetCreationOptions.None);
+
+            var assetFile = this.asset.AssetFiles.First();
+
+            assetFile.GetSasUri(null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        [DeploymentItem(@"Media\dummy.ism")]
+        public void ShouldThrowGetSasUriWithSpecificLocatorIfLocatorTypeIsNotSas()
+        {
+            this.asset = this.context.Assets.CreateFromFile("dummy.ism", AssetCreationOptions.None);
+
+            var locator = this.context.Locators.Create(LocatorType.OnDemandOrigin, this.asset, AccessPermissions.Read, TimeSpan.FromDays(1));
+
+            var assetFile = this.asset.AssetFiles.First();
+
+            assetFile.GetSasUri(locator);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        [DeploymentItem(@"Media\dummy.ism")]
+        public void ShouldThrowGetSasUriWithSpecificLocatorIfLocatorDoesNotBelongToParentAsset()
+        {
+            var asset2 = this.context.Assets.Create("empty", AssetCreationOptions.None);
+            var locator = this.context.Locators.Create(LocatorType.Sas, asset2, AccessPermissions.Read, TimeSpan.FromDays(1));
+
+            this.asset = this.context.Assets.CreateFromFile("dummy.ism", AssetCreationOptions.None);
+            var assetFile = this.asset.AssetFiles.First();
+
+            try
+            {
+                assetFile.GetSasUri(locator);
+            }
+            catch
+            {
+                asset2.Delete();
+                throw;
+            }
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Media\dummy.ism")]
+        public void ShouldGetSasUriWithSpecificLocator()
+        {
+            this.asset = this.context.Assets.CreateFromFile("dummy.ism", AssetCreationOptions.None);
+
+            var locator = this.context.Locators.Create(LocatorType.Sas, this.asset, AccessPermissions.Read, TimeSpan.FromDays(1));
+
+            var assetFile = this.asset.AssetFiles.First();
+
+            var sasUri = assetFile.GetSasUri(locator);
+
+            Assert.IsNotNull(sasUri);
+
+            var client = new HttpClient();
+            var response = client.GetAsync(sasUri, HttpCompletionOption.ResponseHeadersRead).Result;
+
+            Assert.IsTrue(response.IsSuccessStatusCode);
         }
 
         [TestMethod]

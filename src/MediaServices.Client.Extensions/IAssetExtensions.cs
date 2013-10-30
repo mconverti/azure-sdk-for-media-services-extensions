@@ -24,23 +24,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public static class IAssetExtensions
     {
         /// <summary>
-        /// Represents the manifest file extension.
-        /// </summary>
-        public const string ManifestFileExtension = ".ism";
-
-        /// <summary>
-        /// Represents the URL dynamic packaging parameter for HLS.
-        /// </summary>
-        public const string HlsStreamingParameter = "(format=m3u8-aapl)";
-
-        /// <summary>
-        /// Represents the URL dynamic packaging parameter for MPEG-DASH.
-        /// </summary>
-        public const string MpegDashStreamingParameter = "(format=mpd-time-csf)";
-
-        internal const string BaseStreamingUrlTemplate = "{0}/{1}/manifest{2}";
-
-        /// <summary>
         /// Returns a <see cref="System.Threading.Tasks.Task"/> instance to generate <see cref="IAssetFile"/> for the <paramref name="asset"/>.
         /// </summary>
         /// <param name="asset">The <see cref="IAsset"/> instance where to generate its <see cref="IAssetFile"/>.</param>
@@ -189,7 +172,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return asset
                 .AssetFiles
                 .ToList()
-                .Where(af => af.Name.EndsWith(ManifestFileExtension, StringComparison.OrdinalIgnoreCase))
+                .Where(af => af.Name.EndsWith(ILocatorExtensions.ManifestFileExtension, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
         }
 
@@ -210,7 +193,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>A <see cref="System.Uri"/> representing the HLS URL of the <paramref name="asset"/>; otherwise, null.</returns>
         public static Uri GetHlsUri(this IAsset asset)
         {
-            return asset.GetStreamingUri(HlsStreamingParameter);
+            return asset.GetStreamingUri(ILocatorExtensions.HlsStreamingParameter);
         }
 
         /// <summary>
@@ -220,7 +203,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>A <see cref="System.Uri"/> representing the MPEG-DASH URL of the <paramref name="asset"/>; otherwise, null.</returns>
         public static Uri GetMpegDashUri(this IAsset asset)
         {
-            return asset.GetStreamingUri(MpegDashStreamingParameter);
+            return asset.GetStreamingUri(ILocatorExtensions.MpegDashStreamingParameter);
         }
 
         /// <summary>
@@ -247,12 +230,42 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     .LastOrDefault();
                 if (sasLocator != null)
                 {
-                    UriBuilder builder = new UriBuilder(new Uri(sasLocator.Path, UriKind.Absolute));
-                    builder.Path = Path.Combine(builder.Path, assetFile.Name);
-
-                    sasUri = builder.Uri;
+                    sasUri = BuildSasUri(assetFile, sasLocator);
                 }
             }
+
+            return sasUri;
+        }
+
+        /// <summary>
+        /// Returns the SAS URL of the <paramref name="assetFile"/> for progressive download using the <paramref name="sasLocator"/>.
+        /// </summary>
+        /// <param name="assetFile">The <see cref="IAssetFile"/> instance.</param>
+        /// <param name="sasLocator">The <see cref="ILocator"/> instance.</param>
+        /// <returns>A <see cref="System.Uri"/> representing the SAS URL of the <paramref name="assetFile"/> for progressive download; otherwise, null.</returns>
+        public static Uri GetSasUri(this IAssetFile assetFile, ILocator sasLocator)
+        {
+            if (assetFile == null)
+            {
+                throw new ArgumentNullException("assetFile", "The asset file cannot be null.");
+            }
+
+            if (sasLocator == null)
+            {
+                throw new ArgumentNullException("sasLocator", "The SAS locator cannot be null.");
+            }
+
+            if (sasLocator.Type != LocatorType.Sas)
+            {
+                throw new ArgumentException("The locator type must be SAS.", "sasLocator");
+            }
+
+            if (assetFile.ParentAssetId != sasLocator.AssetId)
+            {
+                throw new ArgumentNullException("sasLocator", "The SAS locator does not belong to the parent asset.");
+            }
+
+            Uri sasUri = BuildSasUri(assetFile, sasLocator);
 
             return sasUri;
         }
@@ -271,7 +284,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             IMediaContextContainer mediaContextContainer = asset as IMediaContextContainer;
             MediaContextBase context = null;
-            
+
             if (mediaContextContainer != null)
             {
                 context = mediaContextContainer.GetMediaContext();
@@ -298,7 +311,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             assetFile.UploadProgressChanged -= uploadProgressChangedEventArgs;
 
-            if (assetFileName.EndsWith(ManifestFileExtension, StringComparison.OrdinalIgnoreCase))
+            if (assetFileName.EndsWith(ILocatorExtensions.ManifestFileExtension, StringComparison.OrdinalIgnoreCase))
             {
                 assetFile.IsPrimary = true;
                 await assetFile.UpdateAsync();
@@ -329,7 +342,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     smoothStreamingUri = new Uri(
                         string.Format(
                             CultureInfo.InvariantCulture,
-                            BaseStreamingUrlTemplate,
+                            ILocatorExtensions.BaseStreamingUrlTemplate,
                             originLocator.Path.TrimEnd('/'),
                             manifestAssetFile.Name,
                             streamingParameter),
@@ -338,6 +351,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
 
             return smoothStreamingUri;
+        }
+
+        private static Uri BuildSasUri(IAssetFile assetFile, ILocator sasLocator)
+        {
+            UriBuilder builder = new UriBuilder(new Uri(sasLocator.Path, UriKind.Absolute));
+            builder.Path = Path.Combine(builder.Path, assetFile.Name);
+
+            return builder.Uri;
         }
     }
 }

@@ -91,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssetBaseCollectionExtensions.cs" />
+    <Compile Include="ILocatorExtensions.cs" />
     <Compile Include="JobBaseCollectionExtensions.cs" />
     <Compile Include="MediaProcessorBaseCollectionExtensions.cs" />
     <Compile Include="IAssetExtensions.cs" />

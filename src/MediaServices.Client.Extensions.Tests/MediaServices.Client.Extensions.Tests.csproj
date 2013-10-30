@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssetBaseCollectionExtensionsFixture.cs" />
+    <Compile Include="ILocatorExtensionsFixture.cs" />
     <Compile Include="JobBaseCollectionExtensionsFixture.cs" />
     <Compile Include="MediaProcessorBaseCollectionExtensionsFixture.cs" />
     <Compile Include="IAssetExtensionsFixture.cs" />
