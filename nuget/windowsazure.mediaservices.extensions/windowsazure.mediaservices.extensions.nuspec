@@ -3,15 +3,16 @@
   <metadata>
     <id>windowsazure.mediaservices.extensions</id>
     <title>Windows Azure Media Services .NET SDK Extensions</title>
-    <version>1.0.6</version>
-    <authors>Mariano Converti</authors>
-    <owners>Mariano Converti</owners>
+    <version>1.0.8</version>
+    <authors>Microsoft Corporation</authors>
+    <owners>Microsoft;mingfeiy;johndeu;NimbusPM;gtrifonov;yanmf;mconverti</owners>
     <projectUrl>https://github.com/mconverti/azure-sdk-for-media-services-extensions</projectUrl>
+    <iconUrl>http://nimbuspmteam.blob.core.windows.net/nuget/Media%20Services%20150.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A NuGet package that contains a set of extension methods and helpers for the Windows Azure Media Services SDK for .NET.</description>
     <copyright>Copyright 2013</copyright>
     <language>en-US</language>
-    <tags>WindowsAzure MediaServices</tags>
+    <tags>windowsazureoffical Microsoft WindowsAzure MediaServices</tags>
     <dependencies>
       <dependency id="WindowsAzure.MediaServices" version="2.4.0.0" />
 	  <dependency id="Microsoft.Bcl.Async" version="1.0.16" />
