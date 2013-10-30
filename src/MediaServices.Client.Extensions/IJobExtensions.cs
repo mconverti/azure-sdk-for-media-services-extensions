@@ -58,8 +58,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentException("The job does not have a valid Id. Please, make sure to submit it first.", "job");
             }
 
-            MediaContextBase context = job.GetMediaContext();
-
             return Task.Factory.StartNew(
                     originalJob =>
                     {
@@ -73,6 +71,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                             JobState previousState = refreshedJob.State;
                             double previousOverallProgress = refreshedJob.GetOverallProgress();
 
+                            MediaContextBase context = refreshedJob.GetMediaContext();
                             refreshedJob = context.Jobs.Where(j => j.Id == refreshedJob.Id).First();
 
                             if ((executionProgressChangedCallback != null) && ((refreshedJob.State != previousState) || (refreshedJob.GetOverallProgress() != previousOverallProgress)))
