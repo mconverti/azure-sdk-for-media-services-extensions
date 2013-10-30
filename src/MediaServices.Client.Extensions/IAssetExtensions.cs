@@ -262,7 +262,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             if (assetFile.ParentAssetId != sasLocator.AssetId)
             {
-                throw new ArgumentNullException("sasLocator", "The SAS locator does not belong to the parent asset.");
+                throw new ArgumentException("sasLocator", "The SAS locator does not belong to the parent asset.");
             }
 
             Uri sasUri = BuildSasUri(assetFile, sasLocator);
