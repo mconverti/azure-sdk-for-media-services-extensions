@@ -147,6 +147,7 @@ namespace MediaServices.Client.Extensions.Tests
             AssertDownloadedFile(originalFolderPath, downloadFolderPath, "smallwmv2.wmv");
             AssertDownloadedFile(originalFolderPath, downloadFolderPath, "dummy.ism");
 
+            this.context = this.CreateContext();
             Assert.AreEqual(0, this.context.Locators.Where(l => l.AssetId == assetId).Count());
         }
 
@@ -189,6 +190,7 @@ namespace MediaServices.Client.Extensions.Tests
             AssertDownloadedFile(originalFolderPath, downloadFolderPath, "smallwmv2.wmv", downloadResults["smallwmv2.wmv"]);
             AssertDownloadedFile(originalFolderPath, downloadFolderPath, "dummy.ism", downloadResults["dummy.ism"]);
 
+            this.context = this.CreateContext();
             Assert.AreEqual(0, this.context.Locators.Where(l => l.AssetId == assetId).Count());
         }
 

@@ -189,7 +189,8 @@ namespace MediaServices.Client.Extensions.Tests
             var job = this.context.Jobs.CreateWithSingleTask(mediaProcessorName, taskConfiguration, this.asset, outputAssetName, outputAssetOptions);
             job.Submit();
 
-            job = job.StartExecutionProgressTask(null, CancellationToken.None).Result;
+            var executionProgressTask = job.StartExecutionProgressTask(null, CancellationToken.None);
+            job = executionProgressTask.Result;
 
             Assert.AreEqual(JobState.Finished, job.State);
             Assert.AreEqual(100, job.GetOverallProgress());

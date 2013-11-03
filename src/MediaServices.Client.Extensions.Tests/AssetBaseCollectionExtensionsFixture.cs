@@ -56,6 +56,7 @@ namespace MediaServices.Client.Extensions.Tests
             Assert.AreEqual(1, assetFiles.Count());
             Assert.AreEqual("smallwmv1.wmv", assetFiles.ElementAt(0).Name);
 
+            this.context = this.CreateContext();
             Assert.AreEqual(0, this.context.Locators.Where(l => l.AssetId == assetId).Count());
         }
 
@@ -92,6 +93,7 @@ namespace MediaServices.Client.Extensions.Tests
             Assert.AreEqual(1, assetFiles.Count());
             Assert.AreEqual("smallwmv1.wmv", assetFiles.ElementAt(0).Name);
 
+            this.context = this.CreateContext();
             Assert.AreEqual(0, this.context.Locators.Where(l => l.AssetId == assetId).Count());
         }
 
@@ -154,6 +156,7 @@ namespace MediaServices.Client.Extensions.Tests
             Assert.AreEqual("smallwmv2.wmv", assetFiles.ElementAt(2).Name);
             Assert.IsFalse(assetFiles.ElementAt(2).IsPrimary);
 
+            this.context = this.CreateContext();
             Assert.AreEqual(0, this.context.Locators.Where(l => l.AssetId == assetId).Count());
         }
 
@@ -199,6 +202,7 @@ namespace MediaServices.Client.Extensions.Tests
             Assert.AreEqual("smallwmv2.wmv", assetFiles.ElementAt(2).Name);
             Assert.IsFalse(assetFiles.ElementAt(2).IsPrimary);
 
+            this.context = this.CreateContext();
             Assert.AreEqual(0, this.context.Locators.Where(l => l.AssetId == assetId).Count());
         }
 
