@@ -22,7 +22,7 @@ After installing the package, a **MediaServicesExtensions** folder will be added
 ## Extension Methods and Helpers available
 
 ### Create a Locator
-Create a locator and its associated access policy using a single extension method for the [CloudMediaContext](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.cloudmediacontext.aspx) class. There are additional overloads with different parameters and _async_ support.
+Create a locator and its associated access policy using a single extension method for the [LocatorBaseCollection](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.locatorbasecollection.aspx) class. There are additional overloads with different parameters and _async_ support.
 ```csharp
 CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
 
@@ -39,7 +39,7 @@ AccessPermissions accessPolicyPermissions = AccessPermissions.Read | AccessPermi
 TimeSpan accessPolicyDuration = TimeSpan.FromDays(30);
 
 // Create a locator and its associated access policy using a single extension method.
-ILocator locator = context.CreateLocator(asset, locatorType, accessPolicyPermissions, accessPolicyDuration);
+ILocator locator = context.Locators.Create(locatorType, asset, accessPolicyPermissions, accessPolicyDuration);
 ```
 
 ### Create an Asset from a single local file
