@@ -52,7 +52,7 @@ IAsset asset = context.Assets.CreateFromFolder(folderPath, assetCreationOptions)
 ```
 
 ### Generate Asset Files from Blob storage
-Generate the asset files of an existing asset using a single extension method for the [CloudMediaContext](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.cloudmediacontext.aspx) class. You can use this method after uploading content directly to the asset container in Blob storage. This method leverages the [CreateFileInfos REST API Function](http://msdn.microsoft.com/library/windowsazure/jj683097.aspx#createfileinfos). There is an additional overload with _async_ support.
+Generate the asset files of an existing asset using a single extension method for the [IAsset](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.iasset.aspx) interface. You can use this method after uploading content directly to the asset container in Azure Blob storage. This method leverages the [CreateFileInfos REST API Function](http://msdn.microsoft.com/library/windowsazure/jj683097.aspx#createfileinfos). There is an additional overload with _async_ support.
 ```csharp
 CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
 
@@ -64,11 +64,11 @@ IAsset asset = context.Assets.Create("MyAssetName", AssetCreationOptions.None);
 // ...
 
 // Generate all the asset files in the asset from its Blob storage container using a single extension method.
-context.CreateAssetFiles(asset);
+asset.GenerateFromStorage();
 ```
 
 ### Download Asset Files to a local folder
-Download all the asset files in an asset using a single extension method for the [CloudMediaContext](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.cloudmediacontext.aspx) class. There are additional overloads with different parameters and _async_ support.
+Download all the asset files in an asset using a single extension method for the [IAsset](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.iasset.aspx) interface. There are additional overloads with different parameters and _async_ support.
 ```csharp
 CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
 
@@ -79,7 +79,7 @@ IAsset asset = null;
 string folderPath = @"C:\AssetFilesFolder";
 
 // Download all the asset files to a local folder using a single extension method.
-context.DownloadAssetFilesToFolder(asset, folderPath);
+asset.DownloadToFolder(folderPath);
 ```
 
 ### Get manifest Asset File
