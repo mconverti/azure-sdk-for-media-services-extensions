@@ -21,29 +21,8 @@ After installing the package, a **MediaServicesExtensions** folder will be added
 
 ## Extension Methods and Helpers available
 
-### Create a Locator
-Create a locator and its associated access policy using a single extension method for the [LocatorBaseCollection](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.locatorbasecollection.aspx) class. There are additional overloads with different parameters and _async_ support.
-```csharp
-CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
-
-// The asset used to create the locator. Get a reference to it from the context.
-IAsset asset = null;
-
-// The locator type.
-LocatorType locatorType = LocatorType.OnDemandOrigin;
-
-// The permissions for the locator's access policy.
-AccessPermissions accessPolicyPermissions = AccessPermissions.Read | AccessPermissions.List;
-
-// The duration for the locator's access policy.
-TimeSpan accessPolicyDuration = TimeSpan.FromDays(30);
-
-// Create a locator and its associated access policy using a single extension method.
-ILocator locator = context.Locators.Create(locatorType, asset, accessPolicyPermissions, accessPolicyDuration);
-```
-
 ### Create an Asset from a single local file
-Create a new asset by uploading a local file using a single extension method for the [CloudMediaContext](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.cloudmediacontext.aspx) class. There are additional overloads with different parameters and _async_ support.
+Create a new asset by uploading a local file using a single extension method for the [AssetBaseCollection](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.assetbasecollection.aspx) class. There are additional overloads with different parameters and _async_ support.
 ```csharp
 CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
 
@@ -54,11 +33,11 @@ string filePath = @"C:\AssetFile.wmv";
 AssetCreationOptions assetCreationOptions = AssetCreationOptions.None;
 
 // Create a new asset and upload a local file using a single extension method.
-IAsset asset = context.CreateAssetFromFile(filePath, assetCreationOptions);
+IAsset asset = context.Assets.CreateFromFile(filePath, assetCreationOptions);
 ```
 
 ### Create an Asset from a local folder
-Create a new asset by uploading all the files in a local folder using a single extension method for the [CloudMediaContext](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.cloudmediacontext.aspx) class. There are additional overloads with different parameters and _async_ support.
+Create a new asset by uploading all the files in a local folder using a single extension method for the [AssetBaseCollection](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.assetbasecollection.aspx) class. There are additional overloads with different parameters and _async_ support.
 ```csharp
 CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
 
@@ -69,7 +48,7 @@ string folderPath = @"C:\AssetFilesFolder";
 AssetCreationOptions assetCreationOptions = AssetCreationOptions.None;
 
 // Create a new asset and upload all the files in a local folder using a single extension method.
-IAsset asset = context.CreateAssetFromFolder(folderPath, assetCreationOptions);
+IAsset asset = context.Assets.CreateFromFolder(folderPath, assetCreationOptions);
 ```
 
 ### Generate Asset Files from Blob storage
@@ -111,6 +90,27 @@ IAsset asset = null;
 
 // Get the asset file representing the ISM manifest.
 IAssetFile manifestAssetFile = asset.GetManifestAssetFile();
+```
+
+### Create a Locator
+Create a locator and its associated access policy using a single extension method for the [LocatorBaseCollection](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.locatorbasecollection.aspx) class. There are additional overloads with different parameters and _async_ support.
+```csharp
+CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
+
+// The asset used to create the locator. Get a reference to it from the context.
+IAsset asset = null;
+
+// The locator type.
+LocatorType locatorType = LocatorType.OnDemandOrigin;
+
+// The permissions for the locator's access policy.
+AccessPermissions accessPolicyPermissions = AccessPermissions.Read | AccessPermissions.List;
+
+// The duration for the locator's access policy.
+TimeSpan accessPolicyDuration = TimeSpan.FromDays(30);
+
+// Create a locator and its associated access policy using a single extension method.
+ILocator locator = context.Locators.Create(locatorType, asset, accessPolicyPermissions, accessPolicyDuration);
 ```
 
 ### Get Smooth Streaming URL for Asset
