@@ -113,7 +113,7 @@ TimeSpan accessPolicyDuration = TimeSpan.FromDays(30);
 ILocator locator = context.Locators.Create(locatorType, asset, accessPolicyPermissions, accessPolicyDuration);
 ```
 
-### Get Smooth Streaming URL for Asset
+### Get Smooth Streaming URL from an Asset
 Get the Smooth Streaming URL of a multi-bitrate Smooth Streaming or MP4 asset using a single extension method for the [IAsset](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.iasset.aspx) interface. This methods requires the asset to contain an ISM manifest asset file and that you previously created an Origin locator for the asset; otherwise it returns _null_.
 ```csharp
 // The asset with multi-bitrate Smooth Streaming or MP4 content. Get a reference to it from the context.
@@ -125,7 +125,7 @@ IAsset asset = null;
 Uri smoothStreamingUri = asset.GetSmoothStreamingUri();
 ```
 
-### Get HLS URL for Asset
+### Get HLS URL from an Asset
 Get the HLS URL of a multi-bitrate Smooth Streaming or MP4 asset using a single extension method for the [IAsset](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.iasset.aspx) interface. This methods requires the asset to contain an ISM manifest asset file and that you previously created an Origin locator for the asset; otherwise it returns _null_.
 ```csharp
 // The asset with multi-bitrate Smooth Streaming or MP4 content. Get a reference to it from the context.
@@ -137,7 +137,7 @@ IAsset asset = null;
 Uri hlsUri = asset.GetHlsUri();
 ```
 
-### Get MPEG-DASH URL for Asset
+### Get MPEG-DASH URL from an Asset
 Get the MPEG-DASH URL of a multi-bitrate Smooth Streaming or MP4 asset using a single extension method for the [IAsset](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.iasset.aspx) interface. This methods requires the asset to contain an ISM manifest asset file and that you previously created an Origin locator for the asset; otherwise it returns _null_.
 ```csharp
 // The asset with multi-bitrate Smooth Streaming or MP4 content. Get a reference to it from the context.
@@ -149,8 +149,8 @@ IAsset asset = null;
 Uri mpegDashUri = asset.GetMpegDashUri();
 ```
 
-### Get SAS URL for Asset File
-Get the SAS URL of an asset file for progressive download using a single extension method for the [IAssetFile](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.iassetfile.aspx) interface. This methods requires the parent asset to contain a SAS locator for the asset; otherwise it returns _null_.
+### Get SAS URL from an Asset File
+Get the SAS URL of an asset file for progressive download using a single extension method for the [IAssetFile](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.iassetfile.aspx) interface. This methods requires the parent asset to contain a SAS locator for the asset; otherwise it returns _null_. There is an additional overload that receives an [ILocator](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ilocator.aspx) as a parameter.
 ```csharp
 // The asset with multi-bitrate MP4 content. Get a reference to it from the context.
 IAsset asset = null;
@@ -161,35 +161,6 @@ IAssetFile assetFile = asset.AssetFiles.ToList().Where(af => af.Name.EndsWith(".
 
 // Get the SAS URL of the asset file for progressive download.
 Uri sasUri = assetFile.GetSasUri();
-```
-
-### Save Uri to file
-Save an Uri to a local file using a extension method for the [Uri](http://msdn.microsoft.com/library/system.uri.aspx) class. It creates the file if does not exist; otherwise, appends a new line to the end.
-```csharp
-// The asset with multi-bitrate MP4 content. Get a reference to it from the context.
-IAsset asset = null;
-
-// Make sure to create an Origin locator for the asset.
-// Make sure to create a SAS locator for the asset.
-
-IEnumerable<IAssetFile> mp4AssetFiles = asset
-        .AssetFiles
-        .ToList()
-        .Where(af => af.Name.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase));
-
-// Get the URL's for the asset.
-Uri smoothStreamingUri = asset.GetSmoothStreamingUri();
-Uri hlsUri = asset.GetHlsUri();
-Uri mpegDashUri = asset.GetMpegDashUri();
-List<Uri> mp4ProgressiveDownloadUris = mp4AssetFiles.Select(af => af.GetSasUri()).ToList();
-
-string filePath = @"C:\asset-urls.txt";
-
-// Save the URL's to a file.
-smoothStreamingUri.Save(filePath);
-hlsUri.Save(filePath);
-mpegDashUri.Save(filePath);
-mp4ProgressiveDownloadUris.ForEach(uri => uri.Save(filePath));
 ```
 
 ### Get latest Media Processor by name
