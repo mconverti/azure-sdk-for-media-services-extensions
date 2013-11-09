@@ -125,6 +125,17 @@ IAsset asset = null;
 Uri smoothStreamingUri = asset.GetSmoothStreamingUri();
 ```
 
+### Get Smooth Streaming URL from a Locator
+Get the Smooth Streaming URL of a multi-bitrate Smooth Streaming or MP4 asset using a single extension method for the [ILocator](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ilocator.aspx) interface. This methods requires the locator to be of type [LocatorType.OnDemandOrigin](http://msdn.microsoft.com/en-US/library/microsoft.windowsazure.mediaservices.client.locatortype.aspx), and its asset to contain an ISM manifest asset file.
+```csharp
+// The Origin locator for the multi-bitrate Smooth Streaming or MP4 asset. Get a reference to it from the context.
+ILocator originLocator = null;
+
+
+// Get the Smooth Streaming URL of the locator's asset for adaptive streaming.
+Uri smoothStreamingUri = originLocator.GetSmoothStreamingUri();
+```
+
 ### Get HLS URL from an Asset
 Get the HLS URL of a multi-bitrate Smooth Streaming or MP4 asset using a single extension method for the [IAsset](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.iasset.aspx) interface. This methods requires the asset to contain an ISM manifest asset file and that you previously created an Origin locator for the asset; otherwise it returns _null_.
 ```csharp
@@ -137,6 +148,18 @@ IAsset asset = null;
 Uri hlsUri = asset.GetHlsUri();
 ```
 
+### Get HLS URL from a Locator
+Get the HLS URL of a multi-bitrate Smooth Streaming or MP4 asset using a single extension method for the [ILocator](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ilocator.aspx) interface. This methods requires the locator to be of type [LocatorType.OnDemandOrigin](http://msdn.microsoft.com/en-US/library/microsoft.windowsazure.mediaservices.client.locatortype.aspx), and its asset to contain an ISM manifest asset file.
+```csharp
+// The Origin locator for the multi-bitrate Smooth Streaming or MP4 asset. Get a reference to it from the context.
+ILocator originLocator = null;
+
+// Make sure to create an Origin locator for the asset.
+
+// Get the HLS URL of the locator's asset for adaptive streaming.
+Uri hlsUri = originLocator.GetHlsUri();
+```
+
 ### Get MPEG-DASH URL from an Asset
 Get the MPEG-DASH URL of a multi-bitrate Smooth Streaming or MP4 asset using a single extension method for the [IAsset](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.iasset.aspx) interface. This methods requires the asset to contain an ISM manifest asset file and that you previously created an Origin locator for the asset; otherwise it returns _null_.
 ```csharp
@@ -145,8 +168,20 @@ IAsset asset = null;
 
 // Make sure to create an Origin locator for the asset.
 
-// Get the MPEG-DASH URL of the asset for adaptive streaming.
+// Get the MPEG-DASH URL of the locator's asset for adaptive streaming.
 Uri mpegDashUri = asset.GetMpegDashUri();
+```
+
+### Get MPEG-DASH URL from a Locator
+Get the MPEG-DASH URL of a multi-bitrate Smooth Streaming or MP4 asset using a single extension method for the [ILocator](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ilocator.aspx) interface. This methods requires the locator to be of type [LocatorType.OnDemandOrigin](http://msdn.microsoft.com/en-US/library/microsoft.windowsazure.mediaservices.client.locatortype.aspx), and its asset to contain an ISM manifest asset file.
+```csharp
+// The Origin locator for the multi-bitrate Smooth Streaming or MP4 asset. Get a reference to it from the context.
+ILocator originLocator = null;
+
+// Make sure to create an Origin locator for the asset.
+
+// Get the MPEG-DASH URL of the asset for adaptive streaming.
+Uri mpegDashUri = originLocator.GetMpegDashUri();
 ```
 
 ### Get SAS URL from an Asset File
