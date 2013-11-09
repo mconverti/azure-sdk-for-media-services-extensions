@@ -5,7 +5,7 @@ Windows Azure Media Services .NET SDK Extensions
 A NuGet package that contains a set of extension methods and helpers for the Windows Azure Media Services SDK for .NET.
 
 ## Usage
-Install the [WindowsAzure.MediaServices.Extensions Nuget package](https://www.nuget.org/packages/WindowsAzure.MediaServices.Extensions) by running `Install-Package WindowsAzure.MediaServices.Extensions` in the [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console/).
+Install the [WindowsAzure.MediaServices.Extensions](https://www.nuget.org/packages/WindowsAzure.MediaServices.Extensions) Nuget package by running `Install-Package WindowsAzure.MediaServices.Extensions` in the [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console/).
 
 After installing the package, a **MediaServicesExtensions** folder will be added to your project's root directory containing the following files:
 - AssetBaseCollectionExtensions.cs: Contains extension methods and helpers for the [AssetBaseCollection](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.assetbasecollection.aspx) class.
@@ -156,7 +156,6 @@ Get the SAS URL of an asset file for progressive download using a single extensi
 IAsset asset = null;
 
 // Make sure to create a SAS locator for the asset.
-
 IAssetFile assetFile = asset.AssetFiles.ToList().Where(af => af.Name.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase)).First();
 
 // Get the SAS URL of the asset file for progressive download.
@@ -168,12 +167,15 @@ Get the latest version of a media processor filtering by its name using a single
 ```csharp
 CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
 
+// The media processor name.
+string mediaProcessorName = MediaProcessorNames.WindowsAzureMediaEncoder;
+
 // Get the latest version of a media processor by its name using a single extension method.
-IMediaProcessor processor = context.MediaProcessors.GetLatestMediaProcessorByName(MediaProcessorNames.WindowsAzureMediaEncoder);
+IMediaProcessor processor = context.MediaProcessors.GetLatestMediaProcessorByName(mediaProcessorName);
 ```
 
-### Prepare a Job with a single Task
-Prepare a job with a single task ready to be submitted using a single extension method for the [MediaContextBase](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.mediacontextbase.aspx) class. There is an additional overload with different parameters. 
+### Create a Job with a single Task
+Create a job with a single task ready to be submitted using a single extension method for the [JobBaseCollection](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.jobbasecollection.aspx) class. There is an additional overload with different parameters. 
 ```csharp
 CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
 
@@ -192,34 +194,11 @@ string outputAssetName = "OutputAssetName";
 // The options for creating the output asset of the task.
 AssetCreationOptions outputAssetOptions = AssetCreationOptions.None;
 
-// Prepare a job ready to be submitted with a single task with one input/output asset using a single extension method.
-IJob job = context.PrepareJobWithSingleTask(mediaProcessorName, taskConfiguration, inputAsset, outputAssetName, outputAssetOptions);
+// Create a job ready to be submitted with a single task with one input/output asset using a single extension method.
+IJob job = context.Jobs.CreateWithSingleTask(mediaProcessorName, taskConfiguration, inputAsset, outputAssetName, outputAssetOptions);
 
 // Submit the job and wait until it is completed to get the output asset.
 // ...
-```
-
-### Get Job overall progress
-Get the overall progress of a job by calculating the average progress of all its tasks using a single extension method for the [IJob](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ijob.aspx) interface.
-```csharp
-CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
-
-// The input asset for the task. Get a reference to it from the context.
-IAsset inputAsset = null;
-
-// Prepare a job ready to be submitted with a single task with one input/output asset using a single extension method.
-IJob job = context.PrepareJobWithSingleTask(MediaProcessorNames.WindowsAzureMediaEncoder, MediaEncoderTaskPresetStrings.H264AdaptiveBitrateMP4Set720p, inputAsset, "OutputAssetName", AssetCreationOptions.None);
-
-// Submit the job.
-job.Submit();
-
-// ...
-
-// Refresh the job instance.
-job = context.Jobs.Where(j => j.Id == job.Id).First();
-
-// Get the overall progress of the job by calculating the average progress of all its tasks using a single extension method.
-double jobOverallProgress = job.GetOverallProgress();
 ```
 
 ### Start Job execution progress task to notify when its state or overall progress change
@@ -231,20 +210,42 @@ CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%
 IAsset inputAsset = null;
 
 // Prepare a job ready to be submitted with a single task with one input/output asset using a single extension method.
-IJob job = context.PrepareJobWithSingleTask(MediaProcessorNames.WindowsAzureMediaEncoder, MediaEncoderTaskPresetStrings.H264AdaptiveBitrateMP4Set720p, inputAsset, "OutputAssetName", AssetCreationOptions.None);
+IJob job = context.Jobs.CreateWithSingleTask(MediaProcessorNames.WindowsAzureMediaEncoder, MediaEncoderTaskPresetStrings.H264AdaptiveBitrateMP4Set720p, inputAsset, "OutputAssetName", AssetCreationOptions.None);
 
 // Submit the job.
 job.Submit();
 
 // Start a task to monitor the job progress by invoking a callback when its state or overall progress change in a single extension method.
-job = await context.StartExecutionProgressTask(
-    job,
+job = await job.StartExecutionProgressTask(
     j =>
     {
         Console.WriteLine("Current job state: {0}", j.State);
         Console.WriteLine("Current job progress: {0}", j.GetOverallProgress());
     },
     CancellationToken.None);
+```
+
+### Get Job overall progress
+Get the overall progress of a job by calculating the average progress of all its tasks using a single extension method for the [IJob](http://msdn.microsoft.com/library/microsoft.windowsazure.mediaservices.client.ijob.aspx) interface.
+```csharp
+CloudMediaContext context = new CloudMediaContext("%accountName%", "%accountKey%");
+
+// The input asset for the task. Get a reference to it from the context.
+IAsset inputAsset = null;
+
+// Prepare a job ready to be submitted with a single task with one input/output asset using a single extension method.
+IJob job = context.Jobs.CreateWithSingleTask(MediaProcessorNames.WindowsAzureMediaEncoder, MediaEncoderTaskPresetStrings.H264AdaptiveBitrateMP4Set720p, inputAsset, "OutputAssetName", AssetCreationOptions.None);
+
+// Submit the job.
+job.Submit();
+
+// ...
+
+// Refresh the job instance.
+job = context.Jobs.Where(j => j.Id == job.Id).First();
+
+// Get the overall progress of the job by calculating the average progress of all its tasks using a single extension method.
+double jobOverallProgress = job.GetOverallProgress();
 ```
 
 ### Parse Media Services error messages in XML format
